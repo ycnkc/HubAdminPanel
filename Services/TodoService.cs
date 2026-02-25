@@ -23,7 +23,7 @@ public class TodoService : ITodoService
     public async Task<TodoItem> CreateAsync(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
-            throw new Exception("Title boş olamaz.");
+            throw new Exception("Title can't be null.");
 
         var item = new TodoItem
         {
