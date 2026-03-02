@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Serilog;
+﻿using Serilog;
+using System.Net;
 
 namespace ToDoApi.Middleware
 {

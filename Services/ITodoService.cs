@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ToDoApi.Models;
+﻿using ToDoApi.Models;
 
 public interface ITodoService
 {

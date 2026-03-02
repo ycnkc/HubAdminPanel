@@ -21,7 +21,7 @@ public class TodoRepository : ITodoRepository //inherits the interface
     public async Task AddAsync(TodoItem item)
     {
         _context.TodoItems.Add(item);
-        await _context.SaveChangesAsync(); 
+        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(TodoItem item)
