@@ -20,7 +20,7 @@ public class TodoService : ITodoService
         return await _repository.GetByIdAsync(id);
     }
 
-    public async Task<TodoItem> CreateAsync(string title)
+    public async Task<TodoItem> CreateAsync(string title, int userId)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new Exception("Title can't be null.");
@@ -28,7 +28,8 @@ public class TodoService : ITodoService
         var item = new TodoItem
         {
             Title = title,
-            IsCompleted = false
+            IsCompleted = false,
+            UserId = userId
         };
 
         await _repository.AddAsync(item);

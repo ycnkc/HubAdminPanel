@@ -1,0 +1,603 @@
+2026-03-03 09:55:22.667 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 09:55:22.809 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 09:55:22.812 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 09:55:22.899 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 09:55:22.902 +03:00 [INF] Hosting environment: Development
+2026-03-03 09:55:22.903 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 09:55:23.400 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 09:55:23.604 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 204.0438ms
+2026-03-03 09:55:23.728 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 09:55:23.728 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 09:55:23.745 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 17.3207ms
+2026-03-03 09:55:23.811 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 83.0203ms
+2026-03-03 09:55:23.886 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 09:55:23.914 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 28.0857ms
+2026-03-03 09:56:13.107 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 85
+2026-03-03 09:56:13.206 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 09:56:13.256 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 09:56:13.532 +03:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2026-03-03 09:56:13.577 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 307.9257ms
+2026-03-03 09:56:13.581 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 09:56:13.586 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 400 null application/problem+json; charset=utf-8 479.5765ms
+2026-03-03 09:56:22.195 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 84
+2026-03-03 09:56:22.206 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 09:56:22.211 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 09:56:23.980 +03:00 [INF] Executed DbCommand (76ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 09:56:24.577 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 09:56:24.591 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 2375.2071ms
+2026-03-03 09:56:24.597 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 09:56:24.612 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 2417.3703ms
+2026-03-03 09:57:06.636 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 09:57:06.675 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 09:57:06.701 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 09:57:06.712 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 09:57:06.726 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 09:57:06.731 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 95.0413ms
+2026-03-03 09:57:51.293 +03:00 [INF] Application is shutting down...
+2026-03-03 09:58:00.905 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 09:58:01.081 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 09:58:01.084 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 09:58:01.161 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 09:58:01.164 +03:00 [INF] Hosting environment: Development
+2026-03-03 09:58:01.165 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 09:58:01.294 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 09:58:01.421 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 126.4292ms
+2026-03-03 09:58:01.437 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 09:58:01.452 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 14.9832ms
+2026-03-03 09:58:01.468 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 09:58:01.497 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 29.0489ms
+2026-03-03 09:58:01.589 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 09:58:01.607 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 17.5565ms
+2026-03-03 09:58:20.378 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 84
+2026-03-03 09:58:20.437 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 09:58:20.464 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 09:58:21.352 +03:00 [INF] Executed DbCommand (41ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 09:58:21.772 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 09:58:21.793 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 1320.479ms
+2026-03-03 09:58:21.800 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 09:58:21.816 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 1438.1244ms
+2026-03-03 09:58:44.388 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 09:58:44.421 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 09:58:44.446 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 09:58:44.461 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 09:58:44.475 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 09:58:44.481 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 92.5454ms
+2026-03-03 09:59:19.218 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 23
+2026-03-03 09:59:19.238 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 09:59:19.248 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 09:59:19.255 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-03-03 09:59:19.259 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 09:59:19.262 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 401 0 null 43.7709ms
+2026-03-03 09:59:51.516 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 09:59:51.530 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 09:59:51.540 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 09:59:51.545 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 09:59:51.547 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 09:59:51.552 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 36.2513ms
+2026-03-03 10:05:12.378 +03:00 [INF] Application is shutting down...
+2026-03-03 10:05:28.837 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 10:05:28.975 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 10:05:28.978 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 10:05:29.062 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 10:05:29.065 +03:00 [INF] Hosting environment: Development
+2026-03-03 10:05:29.068 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 10:05:29.133 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 10:05:29.252 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 118.8653ms
+2026-03-03 10:05:29.341 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 10:05:29.341 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 10:05:29.348 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 7.7543ms
+2026-03-03 10:05:29.371 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 29.9865ms
+2026-03-03 10:05:29.492 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 10:05:29.519 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 27.1933ms
+2026-03-03 10:05:34.938 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 10:05:34.998 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 59.912ms
+2026-03-03 10:05:35.023 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 10:05:35.023 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 10:05:35.038 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 14.8845ms
+2026-03-03 10:05:35.045 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 21.3117ms
+2026-03-03 10:05:35.136 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 10:05:35.166 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 29.0097ms
+2026-03-03 10:06:02.177 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 84
+2026-03-03 10:06:02.221 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:06:02.245 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 10:06:03.079 +03:00 [INF] Executed DbCommand (48ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 10:06:03.463 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 10:06:03.474 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 1219.7319ms
+2026-03-03 10:06:03.476 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:06:03.483 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 1306.0829ms
+2026-03-03 10:06:24.604 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:06:24.661 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 10:06:24.690 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 10:06:24.702 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 10:06:24.711 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 10:06:24.714 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 110.5316ms
+2026-03-03 10:08:02.701 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:08:02.712 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 10:08:02.716 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 10:08:02.720 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 10:08:02.723 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 10:08:02.729 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 28.9488ms
+2026-03-03 10:08:17.306 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:08:17.315 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 10:08:17.322 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 10:08:17.326 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 10:08:17.329 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 10:08:17.333 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 27.3242ms
+2026-03-03 10:08:19.338 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:08:19.347 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 10:08:19.354 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 10:08:19.358 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 10:08:19.362 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 10:08:19.365 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 26.966ms
+2026-03-03 10:09:03.163 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 10:09:03.193 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 29.566ms
+2026-03-03 10:09:03.249 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 10:09:03.256 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 10:09:03.260 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 10.9011ms
+2026-03-03 10:09:03.277 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 20.7151ms
+2026-03-03 10:09:03.362 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 10:09:03.388 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 25.7491ms
+2026-03-03 10:10:56.728 +03:00 [INF] Application is shutting down...
+2026-03-03 10:11:04.510 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 10:11:04.645 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 10:11:04.647 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 10:11:04.729 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 10:11:04.731 +03:00 [INF] Hosting environment: Development
+2026-03-03 10:11:04.732 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 10:11:04.850 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 10:11:04.975 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 124.6589ms
+2026-03-03 10:11:05.014 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 10:11:05.023 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 10:11:05.034 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 19.0869ms
+2026-03-03 10:11:05.068 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 44.9293ms
+2026-03-03 10:11:05.178 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 10:11:05.200 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 21.9973ms
+2026-03-03 10:11:27.061 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 84
+2026-03-03 10:11:27.129 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:11:27.159 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 10:11:28.019 +03:00 [INF] Executed DbCommand (36ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 10:11:28.393 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 10:11:28.406 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 1236.8321ms
+2026-03-03 10:11:28.410 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:11:28.419 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 1357.9839ms
+2026-03-03 10:11:58.698 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:11:58.740 +03:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output, Boolean needReplace, Int32 decodedLength)
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Decode(ReadOnlySpan`1 strSpan, Span`1 output)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-03-03 10:11:58.765 +03:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-03-03 10:11:58.779 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-03 10:11:58.796 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-03 10:11:58.804 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 105.9266ms
+2026-03-03 10:12:24.967 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:12:25.007 +03:00 [INF] Executing endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 10:12:25.022 +03:00 [INF] Route matched with {action = "GetAll", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller TodoController (ToDoApi).
+2026-03-03 10:12:25.086 +03:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[IsCompleted], [t].[Title]
+FROM [TodoItems] AS [t]
+2026-03-03 10:12:25.107 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+SelectListIterator`2[[ToDoApi.Models.TodoItem, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[ToDoApi.DTOs.TodoResponseDto, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-03 10:12:25.112 +03:00 [INF] Executed action TodoController.GetAll (ToDoApi) in 83.0983ms
+2026-03-03 10:12:25.118 +03:00 [INF] Executed endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 10:12:25.121 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 200 null application/json; charset=utf-8 153.511ms
+2026-03-03 10:15:11.478 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 23
+2026-03-03 10:15:11.487 +03:00 [INF] Executing endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 10:15:11.494 +03:00 [INF] Route matched with {action = "Create", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(ToDoApi.DTOs.TodoCreateDto) on controller TodoController (ToDoApi).
+2026-03-03 10:15:11.762 +03:00 [INF] Executed DbCommand (29ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [TodoItems] ([IsCompleted], [Title])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1);
+2026-03-03 10:15:11.799 +03:00 [INF] Executing CreatedAtActionResult, writing value of type 'ToDoApi.DTOs.TodoResponseDto'.
+2026-03-03 10:15:11.826 +03:00 [INF] Executed action TodoController.Create (ToDoApi) in 323.2333ms
+2026-03-03 10:15:11.832 +03:00 [INF] Executed endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 10:15:11.835 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 201 null application/json; charset=utf-8 356.8874ms
+2026-03-03 10:15:36.163 +03:00 [INF] Request starting HTTP/2 DELETE https://localhost:7144/api/Todo/0 - null null
+2026-03-03 10:15:36.171 +03:00 [INF] Executing endpoint 'TodoController.Delete (ToDoApi)'
+2026-03-03 10:15:36.178 +03:00 [INF] Route matched with {action = "Delete", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Delete(Int32) on controller TodoController (ToDoApi).
+2026-03-03 10:15:36.230 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [t].[Id], [t].[IsCompleted], [t].[Title]
+FROM [TodoItems] AS [t]
+WHERE [t].[Id] = @__p_0
+2026-03-03 10:15:36.233 +03:00 [INF] Executing ObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ProblemDetails'.
+2026-03-03 10:15:36.250 +03:00 [INF] Executed action TodoController.Delete (ToDoApi) in 66.2971ms
+2026-03-03 10:15:36.253 +03:00 [INF] Executed endpoint 'TodoController.Delete (ToDoApi)'
+2026-03-03 10:15:36.255 +03:00 [INF] Request finished HTTP/2 DELETE https://localhost:7144/api/Todo/0 - 404 null application/json; charset=utf-8 92.1093ms
+2026-03-03 10:16:22.563 +03:00 [INF] Application is shutting down...
+2026-03-03 10:16:29.335 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 10:16:29.479 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 10:16:29.483 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 10:16:29.596 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 10:16:29.600 +03:00 [INF] Hosting environment: Development
+2026-03-03 10:16:29.606 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 10:16:29.725 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 10:16:29.857 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 132.1736ms
+2026-03-03 10:16:29.909 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 10:16:29.909 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 10:16:29.916 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 7.3019ms
+2026-03-03 10:16:29.941 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 32.1836ms
+2026-03-03 10:16:30.039 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 10:16:30.063 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 23.8113ms
+2026-03-03 10:16:54.571 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 84
+2026-03-03 10:16:54.658 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:16:54.696 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 10:16:55.867 +03:00 [INF] Executed DbCommand (46ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 10:16:56.218 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 10:16:56.237 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 1528.6525ms
+2026-03-03 10:16:56.244 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:16:56.257 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 1685.7741ms
+2026-03-03 10:17:17.447 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:17:17.533 +03:00 [INF] Executing endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 10:17:17.542 +03:00 [INF] Route matched with {action = "GetAll", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller TodoController (ToDoApi).
+2026-03-03 10:17:17.588 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[IsCompleted], [t].[Title]
+FROM [TodoItems] AS [t]
+2026-03-03 10:17:17.609 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+SelectListIterator`2[[ToDoApi.Models.TodoItem, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[ToDoApi.DTOs.TodoResponseDto, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-03 10:17:17.618 +03:00 [INF] Executed action TodoController.GetAll (ToDoApi) in 70.6002ms
+2026-03-03 10:17:17.622 +03:00 [INF] Executed endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 10:17:17.626 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 200 null application/json; charset=utf-8 179.1826ms
+2026-03-03 10:17:29.465 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 21
+2026-03-03 10:17:29.480 +03:00 [INF] Executing endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 10:17:29.486 +03:00 [INF] Route matched with {action = "Create", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(ToDoApi.DTOs.TodoCreateDto) on controller TodoController (ToDoApi).
+2026-03-03 10:17:29.716 +03:00 [INF] Executed DbCommand (32ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [TodoItems] ([IsCompleted], [Title])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1);
+2026-03-03 10:17:29.752 +03:00 [INF] Executing CreatedAtActionResult, writing value of type 'ToDoApi.DTOs.TodoResponseDto'.
+2026-03-03 10:17:29.792 +03:00 [INF] Executed action TodoController.Create (ToDoApi) in 300.3397ms
+2026-03-03 10:17:29.802 +03:00 [INF] Executed endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 10:17:29.808 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 201 null application/json; charset=utf-8 342.9533ms
+2026-03-03 10:18:41.803 +03:00 [INF] Application is shutting down...
+2026-03-03 10:18:46.069 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 10:18:46.200 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 10:18:46.202 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 10:18:46.290 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 10:18:46.290 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 10:18:46.292 +03:00 [INF] Hosting environment: Development
+2026-03-03 10:18:46.296 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 10:18:46.409 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 119.2058ms
+2026-03-03 10:18:46.463 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 10:18:46.472 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 10:18:46.483 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 19.9612ms
+2026-03-03 10:18:46.523 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 50.2745ms
+2026-03-03 10:18:46.600 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 10:18:46.616 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 16.0279ms
+2026-03-03 10:18:59.795 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 122
+2026-03-03 10:18:59.841 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:18:59.862 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 10:19:00.666 +03:00 [INF] Executed DbCommand (31ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 10:19:00.989 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 10:19:00.999 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 1128.1609ms
+2026-03-03 10:19:01.002 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 10:19:01.009 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 1213.7414ms
+2026-03-03 10:19:13.683 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 10:19:13.750 +03:00 [INF] Executing endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 10:19:13.762 +03:00 [INF] Route matched with {action = "GetAll", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller TodoController (ToDoApi).
+2026-03-03 10:19:13.811 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[IsCompleted], [t].[Title]
+FROM [TodoItems] AS [t]
+2026-03-03 10:19:13.836 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+SelectListIterator`2[[ToDoApi.Models.TodoItem, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[ToDoApi.DTOs.TodoResponseDto, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-03 10:19:13.847 +03:00 [INF] Executed action TodoController.GetAll (ToDoApi) in 81.1754ms
+2026-03-03 10:19:13.852 +03:00 [INF] Executed endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 10:19:13.855 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 200 null application/json; charset=utf-8 171.1908ms
+2026-03-03 10:19:24.565 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 22
+2026-03-03 10:19:24.583 +03:00 [INF] Executing endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 10:19:24.593 +03:00 [INF] Route matched with {action = "Create", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(ToDoApi.DTOs.TodoCreateDto) on controller TodoController (ToDoApi).
+2026-03-03 10:19:24.781 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [TodoItems] ([IsCompleted], [Title])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1);
+2026-03-03 10:19:24.802 +03:00 [INF] Executing CreatedAtActionResult, writing value of type 'ToDoApi.DTOs.TodoResponseDto'.
+2026-03-03 10:19:24.818 +03:00 [INF] Executed action TodoController.Create (ToDoApi) in 218.1436ms
+2026-03-03 10:19:24.819 +03:00 [INF] Executed endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 10:19:24.823 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 201 null application/json; charset=utf-8 257.957ms
+2026-03-03 10:21:42.297 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 22
+2026-03-03 10:21:42.312 +03:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-03-03 10:21:42.321 +03:00 [INF] AuthenticationScheme: Bearer was forbidden.
+2026-03-03 10:21:42.325 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 403 0 null 27.97ms
+2026-03-03 10:22:46.288 +03:00 [INF] Application is shutting down...
+2026-03-03 10:47:50.422 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-03 10:47:50.500 +03:00 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-03-03 10:47:50.503 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-03 10:47:50.505 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-03-03 10:47:50.534 +03:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-03-03 10:47:50.548 +03:00 [INF] Applying migration '20260303074731_AddUserIdToTodo'.
+2026-03-03 10:47:50.650 +03:00 [INF] Executed DbCommand (60ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [TodoItems] ADD [UserId] int NOT NULL DEFAULT 0;
+2026-03-03 10:47:50.696 +03:00 [INF] Executed DbCommand (45ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TodoItems_UserId] ON [TodoItems] ([UserId]);
+2026-03-03 10:47:50.791 +03:00 [ERR] Failed executing DbCommand (95ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [TodoItems] ADD CONSTRAINT [FK_TodoItems_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE;
+2026-03-03 10:51:58.724 +03:00 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-03 10:51:58.787 +03:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-03-03 10:51:58.790 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-03 10:51:58.792 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-03-03 10:51:58.812 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-03-03 10:51:58.828 +03:00 [INF] Applying migration '20260303074731_AddUserIdToTodo'.
+2026-03-03 10:51:58.879 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [TodoItems] ADD [UserId] int NOT NULL DEFAULT 0;
+2026-03-03 10:51:58.897 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TodoItems_UserId] ON [TodoItems] ([UserId]);
+2026-03-03 10:51:58.903 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [TodoItems] ADD CONSTRAINT [FK_TodoItems_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE;
+2026-03-03 10:51:58.907 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260303074731_AddUserIdToTodo', N'8.0.0');
+2026-03-03 11:07:53.924 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 11:07:54.126 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 11:07:54.129 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 11:07:54.216 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 11:07:54.218 +03:00 [INF] Hosting environment: Development
+2026-03-03 11:07:54.219 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 11:07:54.708 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 11:07:54.878 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 171.9821ms
+2026-03-03 11:07:54.894 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 11:07:54.901 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 6.946ms
+2026-03-03 11:07:54.927 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 11:07:54.969 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 42.1984ms
+2026-03-03 11:07:55.085 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 11:07:55.104 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 19.6154ms
+2026-03-03 11:08:27.207 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/register - application/json 110
+2026-03-03 11:08:27.279 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Register (ToDoApi)'
+2026-03-03 11:08:27.319 +03:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Register(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 11:08:29.696 +03:00 [INF] Executed DbCommand (84ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 4000), @p2='?' (DbType = Int32), @p3='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Users] ([CreatedDate], [PasswordHash], [Role], [Username])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2, @p3);
+2026-03-03 11:08:29.798 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.String'.
+2026-03-03 11:08:29.815 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Register (ToDoApi) in 2477.4276ms
+2026-03-03 11:08:29.826 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Register (ToDoApi)'
+2026-03-03 11:08:29.842 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/register - 200 null text/plain; charset=utf-8 2635.8504ms
+2026-03-03 11:08:53.533 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 110
+2026-03-03 11:08:53.551 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 11:08:53.561 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 11:08:54.037 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 11:08:54.609 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 11:08:54.620 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 1049.0851ms
+2026-03-03 11:08:54.626 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 11:08:54.629 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 1095.3928ms
+2026-03-03 11:09:17.671 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 11:09:17.749 +03:00 [INF] Executing endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 11:09:17.759 +03:00 [INF] Route matched with {action = "GetAll", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller TodoController (ToDoApi).
+2026-03-03 11:09:17.819 +03:00 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[IsCompleted], [t].[Title], [t].[UserId]
+FROM [TodoItems] AS [t]
+2026-03-03 11:09:17.830 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+SelectListIterator`2[[ToDoApi.Models.TodoItem, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[ToDoApi.DTOs.TodoResponseDto, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-03 11:09:17.837 +03:00 [INF] Executed action TodoController.GetAll (ToDoApi) in 74.0618ms
+2026-03-03 11:09:17.844 +03:00 [INF] Executed endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 11:09:17.847 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 200 null application/json; charset=utf-8 175.5049ms
+2026-03-03 11:09:31.367 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 21
+2026-03-03 11:09:31.406 +03:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-03-03 11:09:31.412 +03:00 [INF] AuthenticationScheme: Bearer was forbidden.
+2026-03-03 11:09:31.418 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 403 0 null 50.5441ms
+2026-03-03 11:10:15.477 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 36
+2026-03-03 11:10:15.491 +03:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-03-03 11:10:15.496 +03:00 [INF] AuthenticationScheme: Bearer was forbidden.
+2026-03-03 11:10:15.498 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 403 0 null 20.2529ms
+2026-03-03 11:12:57.043 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 21
+2026-03-03 11:12:57.050 +03:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-03-03 11:12:57.052 +03:00 [INF] AuthenticationScheme: Bearer was forbidden.
+2026-03-03 11:12:57.054 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 403 0 null 11.5433ms
+2026-03-03 11:14:35.210 +03:00 [INF] Application is shutting down...
+2026-03-03 11:15:59.679 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-03 11:15:59.859 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-03 11:15:59.864 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-03 11:15:59.962 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-03 11:15:59.963 +03:00 [INF] Hosting environment: Development
+2026-03-03 11:15:59.967 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-03 11:16:00.368 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 11:16:00.526 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 158.485ms
+2026-03-03 11:16:00.684 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 11:16:00.684 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 11:16:00.700 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 15.4088ms
+2026-03-03 11:16:00.722 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 37.3718ms
+2026-03-03 11:16:00.849 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 11:16:00.870 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 21.0939ms
+2026-03-03 11:16:26.378 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 65
+2026-03-03 11:16:26.457 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 11:16:26.498 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 11:16:28.527 +03:00 [INF] Executed DbCommand (74ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 11:16:29.232 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 11:16:29.251 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 2733.426ms
+2026-03-03 11:16:29.256 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 11:16:29.272 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 2891.8845ms
+2026-03-03 11:16:51.794 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Todo - application/json 21
+2026-03-03 11:16:51.872 +03:00 [INF] Executing endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 11:16:51.886 +03:00 [INF] Route matched with {action = "Create", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(ToDoApi.DTOs.TodoCreateDto) on controller TodoController (ToDoApi).
+2026-03-03 11:16:52.157 +03:00 [INF] Executed DbCommand (19ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (Size = 4000), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [TodoItems] ([IsCompleted], [Title], [UserId])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2);
+2026-03-03 11:16:52.207 +03:00 [INF] Executing CreatedAtActionResult, writing value of type 'ToDoApi.DTOs.TodoResponseDto'.
+2026-03-03 11:16:52.235 +03:00 [INF] Executed action TodoController.Create (ToDoApi) in 339.2815ms
+2026-03-03 11:16:52.239 +03:00 [INF] Executed endpoint 'TodoController.Create (ToDoApi)'
+2026-03-03 11:16:52.242 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Todo - 201 null application/json; charset=utf-8 447.6264ms
+2026-03-03 11:17:05.502 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-03 11:17:05.532 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 29.7566ms
+2026-03-03 11:17:05.580 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-03 11:17:05.588 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-03 11:17:05.590 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 10.2331ms
+2026-03-03 11:17:05.614 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 26.3966ms
+2026-03-03 11:17:05.725 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-03 11:17:05.751 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 25.6273ms
+2026-03-03 11:17:24.055 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7144/api/Auth/login - application/json 77
+2026-03-03 11:17:24.067 +03:00 [INF] Executing endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 11:17:24.076 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(ToDoApi.Models.User) on controller ToDoApi.Controllers.AuthController (ToDoApi).
+2026-03-03 11:17:24.229 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[@__loginUser_Username_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedDate], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginUser_Username_0
+2026-03-03 11:17:24.691 +03:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-03 11:17:24.696 +03:00 [INF] Executed action ToDoApi.Controllers.AuthController.Login (ToDoApi) in 607.6541ms
+2026-03-03 11:17:24.703 +03:00 [INF] Executed endpoint 'ToDoApi.Controllers.AuthController.Login (ToDoApi)'
+2026-03-03 11:17:24.705 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7144/api/Auth/login - 200 null application/json; charset=utf-8 649.6731ms
+2026-03-03 11:17:39.300 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-03 11:17:39.311 +03:00 [INF] Executing endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 11:17:39.324 +03:00 [INF] Route matched with {action = "GetAll", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller TodoController (ToDoApi).
+2026-03-03 11:17:39.361 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[IsCompleted], [t].[Title], [t].[UserId]
+FROM [TodoItems] AS [t]
+2026-03-03 11:17:39.379 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+SelectListIterator`2[[ToDoApi.Models.TodoItem, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[ToDoApi.DTOs.TodoResponseDto, ToDoApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-03 11:17:39.385 +03:00 [INF] Executed action TodoController.GetAll (ToDoApi) in 53.7883ms
+2026-03-03 11:17:39.390 +03:00 [INF] Executed endpoint 'TodoController.GetAll (ToDoApi)'
+2026-03-03 11:17:39.394 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 200 null application/json; charset=utf-8 93.8267ms
+2026-03-03 11:18:06.792 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo/4 - null null
+2026-03-03 11:18:06.804 +03:00 [INF] Executing endpoint 'TodoController.GetById (ToDoApi)'
+2026-03-03 11:18:06.814 +03:00 [INF] Route matched with {action = "GetById", controller = "Todo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetById(Int32) on controller TodoController (ToDoApi).
+2026-03-03 11:18:06.884 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [t].[Id], [t].[IsCompleted], [t].[Title], [t].[UserId]
+FROM [TodoItems] AS [t]
+WHERE [t].[Id] = @__p_0
+2026-03-03 11:18:06.892 +03:00 [INF] Executing ForbidResult with authentication schemes ([]).
+2026-03-03 11:18:06.899 +03:00 [INF] AuthenticationScheme: Bearer was forbidden.
+2026-03-03 11:18:06.901 +03:00 [INF] Executed action TodoController.GetById (ToDoApi) in 80.8278ms
+2026-03-03 11:18:06.904 +03:00 [INF] Executed endpoint 'TodoController.GetById (ToDoApi)'
+2026-03-03 11:18:06.906 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo/4 - 403 0 null 113.9093ms
+2026-03-03 11:18:40.187 +03:00 [INF] Application is shutting down...

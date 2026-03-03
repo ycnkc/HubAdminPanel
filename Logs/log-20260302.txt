@@ -667,3 +667,25 @@ System.InvalidOperationException: No authenticationScheme was specified, and the
    at ToDoApi.Middleware.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in C:\Users\USER\source\repos\ToDoApi\Middleware\ExceptionMiddleware.cs:line 32
 2026-03-02 11:09:04.957 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 500 null application/json; charset=utf-8 70.9933ms
 2026-03-02 11:12:32.878 +03:00 [INF] Application is shutting down...
+2026-03-02 11:18:03.356 +03:00 [INF] User profile is available. Using 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-02 11:18:03.439 +03:00 [INF] Creating key {986616f2-ec02-4f81-abf3-b0d25d28dde8} with creation date 2026-03-02 08:18:03Z, activation date 2026-03-02 08:18:03Z, and expiration date 2026-05-31 08:18:03Z.
+2026-03-02 11:18:03.463 +03:00 [INF] Writing data to file 'C:\Users\USER\AppData\Local\ASP.NET\DataProtection-Keys\key-986616f2-ec02-4f81-abf3-b0d25d28dde8.xml'.
+2026-03-02 11:18:03.564 +03:00 [INF] Now listening on: https://localhost:7144
+2026-03-02 11:18:03.566 +03:00 [INF] Now listening on: http://localhost:5184
+2026-03-02 11:18:03.665 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-02 11:18:03.667 +03:00 [INF] Hosting environment: Development
+2026-03-02 11:18:03.669 +03:00 [INF] Content root path: C:\Users\USER\source\repos\ToDoApi
+2026-03-02 11:18:04.143 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/index.html - null null
+2026-03-02 11:18:04.300 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/index.html - 200 null text/html;charset=utf-8 159.5729ms
+2026-03-02 11:18:04.316 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - null null
+2026-03-02 11:18:04.325 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_framework/aspnetcore-browser-refresh.js - 200 13750 application/javascript; charset=utf-8 9.2484ms
+2026-03-02 11:18:04.345 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/_vs/browserLink - null null
+2026-03-02 11:18:04.388 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/_vs/browserLink - 200 null text/javascript; charset=UTF-8 43.0677ms
+2026-03-02 11:18:04.495 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - null null
+2026-03-02 11:18:04.517 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 21.9489ms
+2026-03-02 11:18:09.711 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7144/api/Todo - null null
+2026-03-02 11:18:09.835 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-02 11:18:09.845 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-02 11:18:09.855 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7144/api/Todo - 401 0 null 143.1737ms
+2026-03-02 11:32:27.929 +03:00 [INF] Application is shutting down...
