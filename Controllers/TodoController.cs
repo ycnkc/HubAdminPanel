@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using ToDoApi.DTOs;
 using System.Security.Claims;
+using ToDoApi.Models;
+using Microsoft.EntityFrameworkCore;
+using ToDoApi.Data;
 
 
 [Authorize]
@@ -11,11 +14,15 @@ using System.Security.Claims;
 public class TodoController : ControllerBase
 {
     private readonly ITodoService _service;
+    private readonly AppDbContext _context;
 
-    public TodoController(ITodoService service)
+    public TodoController(ITodoService service, AppDbContext context)
     {
         _service = service;
+        _context = context;
     }
+
+    
 
 
     /// <summary>
@@ -28,23 +35,65 @@ public class TodoController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] TodoQueryParameters queryParameters)
     {
-        var todos = await _service.GetAllAsync();
+        var query = _context.TodoItems.AsQueryable();
 
         if (CurrentUserRole != "Admin")
         {
-            todos = todos.Where(x => x.UserId == CurrentUserId).ToList();
+            query = query.Where(x => x.UserId == CurrentUserId);
         }
 
-        var response = todos.Select(x => new TodoResponseDto
+        if (!string.IsNullOrWhiteSpace(queryParameters.SearchTerm))
         {
-            Id = x.Id,
-            Title = x.Title,
-            IsCompleted = x.IsCompleted
-        });
+            query = query.Where(testc => testc.Title.Contains(queryParameters.SearchTerm));
+        }
 
-        return Ok(response);
+        if (queryParameters.IsCompleted.HasValue)
+        {
+            query = query.Where(t => t.IsCompleted == queryParameters.IsCompleted.Value);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        if (!string.IsNullOrWhiteSpace(queryParameters.SortBy))
+        {
+            query = queryParameters.SortBy.ToLower() switch
+            {
+                "title" => queryParameters.IsDescending
+                    ? query.OrderByDescending(t => t.Title)
+                    : query.OrderBy(t => t.Title),
+                "iscompleted" => queryParameters.IsDescending
+                    ? query.OrderByDescending(t => t.IsCompleted)
+                    : query.OrderBy(t => t.IsCompleted),
+                _ => queryParameters.IsDescending
+                    ? query.OrderByDescending(t => t.Id)
+                    : query.OrderBy(t => t.Id)
+            };
+        }
+        else
+        {
+            query = query.OrderBy(t => t.Id);
+        }
+
+        var items = await query
+                .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
+                .Take(queryParameters.PageSize)
+                .Select(x => new TodoResponseDto
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    IsCompleted = x.IsCompleted
+                })
+                .ToListAsync();
+
+        return Ok(new
+        {
+            TotalCount = totalCount,
+            PageNumber = queryParameters.PageNumber,
+            PageSize = queryParameters.PageSize,
+            Items = items
+        });
     }
 
     /// <summary>
