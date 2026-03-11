@@ -8,10 +8,32 @@ using ToDoApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter(policyName: "fixed", opt =>
+    {
+        opt.PermitLimit = 10; 
+        opt.Window = TimeSpan.FromSeconds(10); 
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0; 
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        await context.HttpContext.Response.WriteAsync("Rate limit exceeded.");
+    };
+});
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -93,10 +115,18 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+    options.InstanceName = "YarenTodo_";
+});
+
 builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
+
+
 
 
 app.UseSwagger();
@@ -107,9 +137,10 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseMiddleware<TokenValidationMiddleware>();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("fixed");
 
 app.Run();

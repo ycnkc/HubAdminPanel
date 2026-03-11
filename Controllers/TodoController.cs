@@ -5,8 +5,10 @@ using System.Security.Claims;
 using ToDoApi.Models;
 using Microsoft.EntityFrameworkCore;
 using ToDoApi.Data;
+using Microsoft.AspNetCore.RateLimiting;
 
 
+[EnableRateLimiting("fixed")]
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
