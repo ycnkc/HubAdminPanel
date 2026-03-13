@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDoApi.Data;
 using ToDoApi.Models;
@@ -6,6 +7,7 @@ using ToDoApi.Services;
 
 namespace ToDoApi.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -77,6 +79,21 @@ namespace ToDoApi.Controllers
             });
         }
 
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null) return Unauthorized();
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            await _authService.RemoveRefreshTokenAsync(userId);
+
+            return Ok(new { message = "Logout succesful. Bye!"});
+        }
+
         /// <summary>
         /// Refreshes the expired access token using a valid refresh token.
         /// </summary>
@@ -103,5 +120,7 @@ namespace ToDoApi.Controllers
 
             return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
         }
+
+
     }
 }

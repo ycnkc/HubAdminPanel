@@ -2,12 +2,20 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using ToDoApi.Data;
 using ToDoApi.Models;
 
 namespace ToDoApi.Services
 {
     public class AuthService
     {
+        private readonly AppDbContext _context;
+
+        public AuthService(AppDbContext context)
+        {
+            _context = context;
+        } 
+
         public string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
@@ -51,6 +59,18 @@ namespace ToDoApi.Services
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
+
+        public async Task RemoveResfreshTokenAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
+            {
+                user.RefreshToken = null;
+                user.RefreshTokenExpiryTime = null;
+                await _context.SaveChangesAsync();
+            }
+        }
+
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token, IConfiguration configuration)
         {

@@ -21,4 +21,15 @@ public class AIController : ControllerBase
         var response = await _aiService.GetAIResponseAsync($"Give me an advice for this task: {task}");
         return Ok(new { Suggestion = response });
     }
+
+
+    /// <summary>
+    /// You can chat here.
+    /// </summary>
+    [HttpGet("chat")]
+    public async Task<IActionResult> Chat(string message)
+    {
+        var response = await _aiService.GetAIResponseAsync($"{message}");
+        return Ok(new {Chat = response});
+    }
 }

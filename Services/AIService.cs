@@ -15,41 +15,39 @@ public class AIService : IAIService
     }
 
     public async Task<string> GetAIResponseAsync(string userPrompt)
+{
+    var baseUrl = "http://localhost:11434/api/chat";
+
+    var requestBody = new
     {
-        var apiKey = _config["GroqSettings:ApiKey"];
-        var baseUrl = "https://api.groq.com/openai/v1/chat/completions";
-
-        var requestBody = new
+        model = "phi3", 
+        messages = new[]
         {
-            model = "llama-3.3-70b-versatile",
-            messages = new[]
-            {
-                new { role = "system", content = "You are a to-do assistant." },
-                new { role = "user", content = userPrompt }
-            }
-        };
+            new { role = "system", content = "You are a to-do assistant." },
+            new { role = "user", content = userPrompt }
+        },
+        stream = false 
+    };
 
-        var jsonPayload = JsonSerializer.Serialize(requestBody);
-        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+    var response = await _httpClient.PostAsJsonAsync(baseUrl, requestBody);
+    
+    if (response.IsSuccessStatusCode)
+    {
+        var responseString = await response.Content.ReadAsStringAsync();
+        
+        using var doc = JsonDocument.Parse(responseString);
+        var root = doc.RootElement;
 
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-
-        var response = await _httpClient.PostAsync(baseUrl, content);
-
-        if (response.IsSuccessStatusCode)
+        if (root.TryGetProperty("message", out var messageElement))
         {
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            using var doc = JsonDocument.Parse(responseString);
-            return doc.RootElement
-                    .GetProperty("choices")[0]
-                    .GetProperty("message")
-                    .GetProperty("content")
-                    .GetString() ?? "No response.";
+            return messageElement.GetProperty("content").GetString() ?? "Answer null.";
         }
-
-        return $"Error: {response.StatusCode}";
+        
+        return "Message not found.";
     }
+
+    return $"Error: {response.StatusCode}";
+}
 
 
 }
