@@ -60,7 +60,7 @@ namespace ToDoApi.Services
             return Convert.ToBase64String(randomNumber);
         }
 
-        public async Task RemoveResfreshTokenAsync(int userId)
+        public async Task RemoveRefreshTokenAsync(int userId)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user != null)
