@@ -6,6 +6,7 @@ using ToDoApi.Models;
 using Microsoft.EntityFrameworkCore;
 using ToDoApi.Data;
 using Microsoft.AspNetCore.RateLimiting;
+using ToDoApi.Services;
 
 
 [EnableRateLimiting("fixed")]
@@ -17,11 +18,15 @@ public class TodoController : ControllerBase
 {
     private readonly ITodoService _service;
     private readonly AppDbContext _context;
+    private readonly EmbeddingService _embeddingService;
+    private readonly PineconeService _pineconeService;
 
-    public TodoController(ITodoService service, AppDbContext context)
+    public TodoController(ITodoService service, AppDbContext context, EmbeddingService embeddingService, PineconeService pineconeService)
     {
         _service = service;
         _context = context;
+        _embeddingService = embeddingService;
+        _pineconeService = pineconeService;
     }
 
     
@@ -151,14 +156,18 @@ public class TodoController : ControllerBase
     {
         var item = await _service.CreateAsync(dto.Title, CurrentUserId);
 
-        var response = new TodoResponseDto
+        try
         {
-            Id = item.Id,
-            Title = item.Title,
-            IsCompleted = item.IsCompleted
-        };
+            float[] vector = await _embeddingService.GetEmbeddingAsync(item.Title);
+            await _pineconeService.UpsertVectorAsync(item.Id, vector, CurrentUserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Saving vectors unsuccessful. {ex.Message}");
+        }
 
-        return CreatedAtAction(nameof(GetById), new { id = item.Id }, response);
+        var response = new TodoResponseDto {Id = item.Id, Title = item.Title};
+        return CreatedAtAction(nameof(GetById), new {id = item.Id}, response);
     }
 
     /// <summary>
@@ -215,6 +224,10 @@ public class TodoController : ControllerBase
 
         return NoContent();
     }
-    private int CurrentUserId => int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-    private string CurrentUserRole => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
+
+
+
+
+    public int CurrentUserId => int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+    public string CurrentUserRole => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
 }

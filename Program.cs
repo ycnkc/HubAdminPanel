@@ -19,6 +19,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddHttpClient<IAIService, AIService>();
 
+builder.Services.AddHttpClient<EmbeddingService>();
+builder.Services.AddHttpClient<PineconeService>();
+
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter(policyName: "fixed", opt =>

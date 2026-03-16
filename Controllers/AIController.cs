@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ToDoApi.Services;
+using ToDoApi.Models;
 
 
 [Authorize]
@@ -27,9 +29,16 @@ public class AIController : ControllerBase
     /// You can chat here.
     /// </summary>
     [HttpGet("chat")]
-    public async Task<IActionResult> Chat(string message)
+    public async Task<IActionResult> Chat([FromQuery] string prompt)
     {
-        var response = await _aiService.GetAIResponseAsync($"{message}");
-        return Ok(new {Chat = response});
+        var answer = await _aiService.GetSmartAiAnswer(prompt, CurrentUserId);
+        return Ok(new {response = answer});
     }
+
+        private int CurrentUserId => int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+    private string CurrentUserRole => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
+
 }
+
+
+

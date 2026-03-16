@@ -1,16 +1,25 @@
 using System.Text;
 using System.Text.Json;
 using System.Net.Http.Headers;
+using ToDoApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 public class AIService : IAIService
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _config;
 
-    public AIService(HttpClient httpClient, IConfiguration config)
+    private readonly EmbeddingService _embeddingService;
+    private readonly PineconeService _pineconeService;
+    private readonly AppDbContext _context;
+
+    public AIService(HttpClient httpClient, IConfiguration config, AppDbContext context, EmbeddingService embeddingService, PineconeService pineconeService)
     {
         _httpClient = httpClient;
         _config = config;
+        _embeddingService = embeddingService;
+        _pineconeService = pineconeService;
+        _context = context;
 
     }
 
@@ -48,6 +57,31 @@ public class AIService : IAIService
 
     return $"Error: {response.StatusCode}";
 }
+    
+    public async Task<string> GetSmartAiAnswer(string userQuestion, int userId)
+    {
+        var queryVector = await _embeddingService.GetEmbeddingAsync(userQuestion);
+
+        var relatedIds = await _pineconeService.QuerySimilarVectorsAsync(queryVector, userId);
+
+        var todos = await _context.TodoItems
+        .Where(t => relatedIds.Contains(t.Id.ToString()))
+        .ToListAsync();
+
+        string context = string.Join("\n", todos.Select(t => $"- {t.Title}"));
+
+        string finalPrompt = $@"You are a helper to-do assistant.
+        Related tasks in the user's database:
+        {context}
+        
+        Question: {userQuestion}
+        
+        Based on the tasks above, generate a short, professional and helping answer please.";
+
+        return await GetAIResponseAsync(finalPrompt);
+
+    }
+
 
 
 }
