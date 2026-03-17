@@ -7,4 +7,5 @@ appsettings.json
 *.suo
 *.cache
 *.log
+/Logs
 /publish

@@ -83,5 +83,45 @@ public class AIService : IAIService
     }
 
 
+    public async Task<string> SummarizeExceptionAsync(string logContent)
+    {
+        var simplifiedLog = logContent.Length > 1000 
+                        ? logContent.Substring(0, 1000) 
+                        : logContent;
+
+        string systemPrompt = $@"Analyze the logs below.
+        Only indicate IMPORTANT PROBLEMS. If not, write system is stabilized. Skip successful processes.
+        Format: [Summary] - [Solution] - [Priority (Low, Medium, High, Critical)]
+        
+        ERROR LOG:
+        {simplifiedLog}";
+
+        return await GetAIResponseAsync(systemPrompt);
+    }
+
+    public void LogToTerminal(string aiResponse)
+    {
+        Console.WriteLine("AI Error Analysis Started...");
+
+        if (aiResponse.Contains("Critical", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("!!CRITICAL ERROR DETECTED!!");
+        } 
+        else if (aiResponse.Contains("High", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("!HIGH PRIORITY ERROR!");
+        } 
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Low-Medium level error.");
+        }
+
+        Console.ResetColor();
+        Console.WriteLine(aiResponse);
+        Console.WriteLine("Analysis Completed.");
+    }
 
 }

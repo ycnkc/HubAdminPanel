@@ -35,7 +35,29 @@ public class AIController : ControllerBase
         return Ok(new {response = answer});
     }
 
-        private int CurrentUserId => int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("analyze-error-log")]
+    public async Task<IActionResult> AnalyzeLog(IFormFile logFile)
+    {
+        if (logFile == null || logFile.Length == 0)
+            return BadRequest("Please upload a valid .txt file.");
+
+        using var reader = new StreamReader(logFile.OpenReadStream());
+        string fullLogContent = await reader.ReadToEndAsync();
+
+        var analysisResult = await _aiService.SummarizeExceptionAsync(fullLogContent);
+
+        _aiService.LogToTerminal(analysisResult);
+
+        return Ok(new
+        {
+            Analysis = analysisResult,
+            ProcessedAt = DateTime.Now
+        });
+    }
+
+    private int CurrentUserId => int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
     private string CurrentUserRole => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
 
 }
