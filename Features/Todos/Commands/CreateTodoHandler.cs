@@ -41,7 +41,7 @@ using ToDoApi.Models;
             Console.WriteLine($"Pinecone error: {ex.Message}");
         }
 
-        await _hubContext.Clients.All.SendAsync("ReceiveNotification", $"New task added: {todo.Title}");
+        await _hubContext.Clients.User(request.UserId.ToString()).SendAsync("ReceiveNotification", $"New task added: {todo.Title}");
 
 
         return new TodoResponseDto

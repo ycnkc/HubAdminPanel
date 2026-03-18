@@ -2,41 +2,237 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ToDoApi Notifications</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Task Management System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        #notifications { list-style-type: none; padding: 0; }
-        #notifications li { background: #e0f7fa; border: 1px solid #00acc1; padding: 10px; margin-bottom: 5px; border-radius: 4px; }
+        :root { --primary: #2563eb; --success: #10b981; --danger: #ef4444; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; color: var(--text); }
+        .container { width: 100%; max-width: 1000px; display: flex; flex-direction: column; }
+        
+        /* Auth & Layout Panels */
+        .panel { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .dashboard-layout { display: flex; gap: 30px; margin-top: 20px; align-items: flex-start; }
+        .panel-add { flex: 1; }
+        .panel-list { flex: 1.2; max-height: 600px; overflow-y: auto; }
+
+        /* Form Elements */
+        h2 { margin-top: 0; color: #0f172a; font-size: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 1.5rem; }
+        input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-size: 0.95rem; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        /* Task Items */
+        .task-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; animation: fadeIn 0.3s ease; }
+        .task-item:last-child { border-bottom: none; }
+        .task-content { display: flex; align-items: center; gap: 10px; }
+        .completed-text { text-decoration: line-through; color: #94a3b8; }
+        .btn-delete { background: var(--danger); width: auto; padding: 6px 12px; font-size: 0.8rem; }
+
+        /* Auth Specials */
+        .auth-toggle { text-align: center; margin-top: 15px; font-size: 0.85rem; color: #64748b; }
+        .auth-toggle span { color: var(--primary); cursor: pointer; font-weight: bold; }
+        
+        /* Utils */
+        .hidden { display: none; }
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--success); color: white; padding: 15px 25px; border-radius: 8px; display: none; z-index: 1000; box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        #connStatus { font-size: 0.75rem; text-align: center; margin-top: 10px; font-weight: bold; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <h1>SignalR Notification Panel</h1>
-    <div id="status">Connecting...</div>
-    <ul id="notifications"></ul>
+
+    <div id="toast"></div>
+
+    <div class="container">
+        
+        <div id="authSection" class="panel" style="max-width: 400px; margin: 80px auto;">
+            <div id="loginView">
+                <h2>🔑 System Access</h2>
+                <input type="text" id="loginUser" placeholder="Username" value="">
+                <input type="password" id="loginPass" placeholder="Password" value="">
+                <button onclick="handleSignIn()">Sign In</button>
+                <div class="auth-toggle">Don't have an account? <span onclick="toggleAuth(true)">Sign Up</span></div>
+            </div>
+
+            <div id="signUpView" class="hidden">
+                <h2>📝 Create Account</h2>
+                <input type="text" id="regUser" placeholder="Username">
+                <input type="password" id="regPass" placeholder="Password">
+                
+                <label style="font-size: 0.85rem; color: #64748b; display: block; margin-bottom: 5px;">Select Account Type:</label>
+                <select id="regRole" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; cursor: pointer;">
+                    <option value="User">Standard User</option>
+                    <option value="Admin">Administrator</option>
+                </select>
+            
+                <button onclick="handleSignUp()" style="background: var(--success);">Register Now</button>
+                <div class="auth-toggle">Already have an account? <span onclick="toggleAuth(false)">Sign In</span></div>
+            </div>
+            <p id="authError" style="color: var(--danger); font-size: 0.8rem; text-align: center; margin-top: 10px;"></p>
+        </div>
+
+        <div id="dashboardView" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h1 style="font-size: 1.5rem; color: #1e293b;">Management Console</h1>
+                <button onclick="handleSignOut()" class="btn-delete" style="width: auto;">Logout</button>
+            </div>
+            
+            <div class="dashboard-layout">
+                <div class="panel panel-add">
+                    <h2>📝 Add New Task</h2>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 20px;">Enter the details of your next objective.</p>
+                    <input type="text" id="taskInput" placeholder="Task title...">
+                    <button onclick="addTask()">Create Task</button>
+                    <div id="connStatus">Socket: Disconnected</div>
+                </div>
+
+                <div class="panel panel-list">
+                    <h2>📋 Current Tasks</h2>
+                    <ul id="taskList" style="list-style: none; padding: 0; margin: 0;">
+                        </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/notificationHub") 
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
+        const API_URL = "https://localhost/api/"; 
 
-        connection.on("ReceiveNotification", function (message) {
-            const li = document.createElement("li");
-            li.textContent = message; 
-            document.getElementById("notifications").appendChild(li);
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("access_token");
+            if (token) { setupDashboard(token); }
         });
 
-        connection.start()
-            .then(function () {
-                document.getElementById("status").textContent = "SignalR connection active.";
-                document.getElementById("status").style.color = "green";
-            })
-            .catch(function (err) {
-                document.getElementById("status").textContent = "Connection Error: " + err.toString();
-                document.getElementById("status").style.color = "red";
-                return console.error(err.toString());
+        function toggleAuth(isSignUp) {
+            document.getElementById("loginView").classList.toggle("hidden", isSignUp);
+            document.getElementById("signUpView").classList.toggle("hidden", !isSignUp);
+            document.getElementById("authError").textContent = "";
+        }
+
+        // --- AUTH LOGIC ---
+        async function handleSignUp() {
+            const u = document.getElementById("regUser").value;
+            const e = document.getElementById("regEmail").value;
+            const p = document.getElementById("regPass").value;
+            try {
+                const res = await fetch(`${API_URL}auth/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ Username: u, Email: e, Password: p })
+                });
+                if (res.ok) {
+                    alert("Registration successful! You can now login.");
+                    toggleAuth(false);
+                } else {
+                    const data = await res.json();
+                    document.getElementById("authError").textContent = data.message || "Registration failed.";
+                }
+            } catch (err) { document.getElementById("authError").textContent = "Connection error."; }
+        }
+
+        async function handleSignIn() {
+            const u = document.getElementById("loginUser").value;
+            const p = document.getElementById("loginPass").value;
+            const res = await fetch(`${API_URL}auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Username: u, PasswordHash: p })
             });
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem("access_token", data.token);
+                localStorage.setItem("user_id", data.userId);
+                location.reload();
+            } else { document.getElementById("authError").textContent = "Invalid credentials."; }
+        }
+
+        async function fetchTasks() {
+            const token = localStorage.getItem("access_token");
+            try {
+                const res = await fetch(`${API_URL}Todo`, { headers: { "Authorization": `Bearer ${token}` } });
+                const data = await res.json();
+                const tasks = Array.isArray(data) ? data : (data.items || []);
+                const list = document.getElementById("taskList");
+                list.innerHTML = tasks.length === 0 ? "<li style='color:#94a3b8; text-align:center; padding:20px;'>No tasks found.</li>" : "";
+
+                tasks.forEach(t => {
+                    const li = document.createElement("li");
+                    li.className = "task-item";
+                    const title = t.title || t.Title;
+                    const id = t.id || t.Id;
+                    const isDone = t.isCompleted || t.IsCompleted;
+                    li.innerHTML = `
+                        <div class="task-content">
+                            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${id}, '${title}', ${isDone})">
+                            <span class="${isDone ? 'completed-text' : ''}">${title}</span>
+                        </div>
+                        <button class="btn-delete" onclick="deleteTask(${id})">Delete</button>
+                    `;
+                    list.appendChild(li);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function addTask() {
+            const input = document.getElementById("taskInput");
+            if (!input.value) return;
+            await fetch(`${API_URL}Todo`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("access_token")}` },
+                body: JSON.stringify({ title: input.value })
+            });
+            input.value = "";
+            fetchTasks();
+        }
+
+        async function deleteTask(id) {
+            await fetch(`${API_URL}Todo/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${localStorage.getItem("access_token")}` }
+            });
+            fetchTasks();
+        }
+
+        async function toggleTask(id, title, status) {
+            await fetch(`${API_URL}Todo/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("access_token")}` },
+                body: JSON.stringify({ id: id, title: title, isCompleted: !status })
+            });
+            fetchTasks();
+        }
+
+        // --- REAL-TIME ---
+        function startSignalR(token) {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub", { accessTokenFactory: () => token })
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveNotification", (msg) => {
+                const toast = document.getElementById("toast");
+                toast.textContent = `🔔 ${msg}`;
+                toast.style.display = "block";
+                setTimeout(() => toast.style.display = "none", 4000);
+                fetchTasks();
+            });
+
+            connection.start().then(() => {
+                const s = document.getElementById("connStatus");
+                s.textContent = "Socket: Connected ●";
+                s.style.color = "#10b981";
+            }).catch(err => console.error("SignalR Error", err));
+        }
+
+        function setupDashboard(token) {
+            document.getElementById("authSection").classList.add("hidden");
+            document.getElementById("dashboardView").classList.remove("hidden");
+            fetchTasks();
+            startSignalR(token);
+        }
+
+        function handleSignOut() { localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
