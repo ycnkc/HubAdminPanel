@@ -10,12 +10,20 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using ToDoApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+builder.Services.AddSignalR();
+
+
+
 
 builder.Services.AddHttpClient<IAIService, AIService>();
 
@@ -132,8 +140,6 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 
 
-
-
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -145,7 +151,8 @@ app.UseMiddleware<TokenValidationMiddleware>();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseDefaultFiles(); 
+app.UseStaticFiles();
 app.MapControllers().RequireRateLimiting("fixed");
-
+app.MapHub<NotificationHub>("/notificationHub");
 app.Run();

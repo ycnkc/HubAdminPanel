@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ToDoApi Notifications</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #notifications { list-style-type: none; padding: 0; }
+        #notifications li { background: #e0f7fa; border: 1px solid #00acc1; padding: 10px; margin-bottom: 5px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>SignalR Notification Panel</h1>
+    <div id="status">Connecting...</div>
+    <ul id="notifications"></ul>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub") 
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.on("ReceiveNotification", function (message) {
+            const li = document.createElement("li");
+            li.textContent = message; 
+            document.getElementById("notifications").appendChild(li);
+        });
+
+        connection.start()
+            .then(function () {
+                document.getElementById("status").textContent = "SignalR connection active.";
+                document.getElementById("status").style.color = "green";
+            })
+            .catch(function (err) {
+                document.getElementById("status").textContent = "Connection Error: " + err.toString();
+                document.getElementById("status").style.color = "red";
+                return console.error(err.toString());
+            });
+    </script>
+</body>
+</html>

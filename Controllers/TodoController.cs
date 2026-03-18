@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using ToDoApi.Data;
 using Microsoft.AspNetCore.RateLimiting;
 using ToDoApi.Services;
+using MediatR;
+using ToDoApi.Features.Todos.Queries;
+using ToDoApi.Features.Todos.Commands;
 
 
 [EnableRateLimiting("fixed")]
@@ -16,20 +19,12 @@ using ToDoApi.Services;
 [Produces("application/json")] 
 public class TodoController : ControllerBase
 {
-    private readonly ITodoService _service;
-    private readonly AppDbContext _context;
-    private readonly EmbeddingService _embeddingService;
-    private readonly PineconeService _pineconeService;
+    private readonly IMediator _mediator;
 
-    public TodoController(ITodoService service, AppDbContext context, EmbeddingService embeddingService, PineconeService pineconeService)
+    public TodoController(IMediator mediator)
     {
-        _service = service;
-        _context = context;
-        _embeddingService = embeddingService;
-        _pineconeService = pineconeService;
+        _mediator = mediator;
     }
-
-    
 
 
     /// <summary>
@@ -44,63 +39,9 @@ public class TodoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAll([FromQuery] TodoQueryParameters queryParameters)
     {
-        var query = _context.TodoItems.AsQueryable();
-
-        if (CurrentUserRole != "Admin")
-        {
-            query = query.Where(x => x.UserId == CurrentUserId);
-        }
-
-        if (!string.IsNullOrWhiteSpace(queryParameters.SearchTerm))
-        {
-            query = query.Where(testc => testc.Title.Contains(queryParameters.SearchTerm));
-        }
-
-        if (queryParameters.IsCompleted.HasValue)
-        {
-            query = query.Where(t => t.IsCompleted == queryParameters.IsCompleted.Value);
-        }
-
-        var totalCount = await query.CountAsync();
-
-        if (!string.IsNullOrWhiteSpace(queryParameters.SortBy))
-        {
-            query = queryParameters.SortBy.ToLower() switch
-            {
-                "title" => queryParameters.IsDescending
-                    ? query.OrderByDescending(t => t.Title)
-                    : query.OrderBy(t => t.Title),
-                "iscompleted" => queryParameters.IsDescending
-                    ? query.OrderByDescending(t => t.IsCompleted)
-                    : query.OrderBy(t => t.IsCompleted),
-                _ => queryParameters.IsDescending
-                    ? query.OrderByDescending(t => t.Id)
-                    : query.OrderBy(t => t.Id)
-            };
-        }
-        else
-        {
-            query = query.OrderBy(t => t.Id);
-        }
-
-        var items = await query
-                .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
-                .Take(queryParameters.PageSize)
-                .Select(x => new TodoResponseDto
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    IsCompleted = x.IsCompleted
-                })
-                .ToListAsync();
-
-        return Ok(new
-        {
-            TotalCount = totalCount,
-            PageNumber = queryParameters.PageNumber,
-            PageSize = queryParameters.PageSize,
-            Items = items
-        });
+        var query = new GetAllTodosQuery(queryParameters, CurrentUserId, CurrentUserRole);
+        var result = await _mediator.Send(query);
+        return Ok(result);
     }
 
     /// <summary>
@@ -114,22 +55,11 @@ public class TodoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
-        var todo = await _service.GetByIdAsync(id);
+        var query = new GetTodoByIdQuery(id, CurrentUserId, CurrentUserRole);
+        var response = await _mediator.Send(query);
 
-        if (todo == null)
-            return NotFound();
-
-        if (CurrentUserRole != "Admin" && todo.UserId != CurrentUserId)
-        {
-            return Forbid();
-        }
-
-        var response = new TodoResponseDto
-        {
-            Id = todo.Id,
-            Title = todo.Title,
-            IsCompleted = todo.IsCompleted
-        };
+        if (response == null)
+            return NotFound(); 
 
         return Ok(response);
     }
@@ -154,20 +84,10 @@ public class TodoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] TodoCreateDto dto)
     {
-        var item = await _service.CreateAsync(dto.Title, CurrentUserId);
+        var command = new CreateTodoCommand(dto.Title, CurrentUserId);
+        var response = await _mediator.Send(command);
 
-        try
-        {
-            float[] vector = await _embeddingService.GetEmbeddingAsync(item.Title);
-            await _pineconeService.UpsertVectorAsync(item.Id, vector, CurrentUserId);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Saving vectors unsuccessful. {ex.Message}");
-        }
-
-        var response = new TodoResponseDto {Id = item.Id, Title = item.Title};
-        return CreatedAtAction(nameof(GetById), new {id = item.Id}, response);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
     /// <summary>
@@ -178,21 +98,21 @@ public class TodoController : ControllerBase
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Update(int id, [FromBody] TodoResponseDto dto)
     {
-        var todo = await _service.GetByIdAsync(id);
+        var command = new UpdateTodoCommand(
+            id, 
+            dto.Title, 
+            dto.IsCompleted, 
+            CurrentUserId, 
+            CurrentUserRole
+        );
 
-        if (todo == null)
-            return NotFound();
-        if (CurrentUserRole != "Admin" && todo.UserId != CurrentUserId)
-        {
-            return Forbid();
-        }
+        var success = await _mediator.Send(command);
 
-        var result = await _service.UpdateAsync(id, dto.Title, dto.IsCompleted);
-
-        if (!result)
-            return NotFound();
+        if (!success)
+            return NotFound(); 
 
         return NoContent();
     }
@@ -207,17 +127,8 @@ public class TodoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        var todo = await _service.GetByIdAsync(id);
-
-        if (todo == null)
-            return NotFound();
-
-        if (CurrentUserRole != "Admin" && todo.UserId != CurrentUserId)
-        {
-            return Forbid();
-        }
-
-        var result = await _service.DeleteAsync(id);
+        var command = new DeleteTodoCommand(id, CurrentUserId, CurrentUserRole);
+        var result = await _mediator.Send(command);
 
         if (!result)
             return NotFound();
@@ -228,6 +139,6 @@ public class TodoController : ControllerBase
 
 
 
-    public int CurrentUserId => int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-    public string CurrentUserRole => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
+    private int CurrentUserId => int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+    private string CurrentUserRole => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
 }
