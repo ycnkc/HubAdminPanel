@@ -3,9 +3,8 @@
     /// <summary>
     /// Model used for handling token refresh requests.
     /// </summary>
-    public class TokenModel
+    public class RefreshTokenRequest
     {
-        public string? AccessToken { get; set; }
         public string? RefreshToken { get; set; }
     }
 }

@@ -98,16 +98,14 @@ namespace ToDoApi.Controllers
         /// Refreshes the expired access token using a valid refresh token.
         /// </summary>
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] TokenModel tokenModel)
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
         {
-            if (tokenModel is null) return BadRequest("Invalid client request");
+            if (request is null) return BadRequest("Invalid client request");
 
-            var principal = _authService.GetPrincipalFromExpiredToken(tokenModel.AccessToken, _configuration);
-            var username = principal.Identity.Name;
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
 
-            if (user == null || user.RefreshToken != tokenModel.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
                 return BadRequest("Invalid refresh token request");
             }
@@ -116,6 +114,7 @@ namespace ToDoApi.Controllers
             var newRefreshToken = _authService.GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
             await _context.SaveChangesAsync();
 
             return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
