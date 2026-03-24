@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 bin/
 obj/
 .vs/
@@ -10,16 +10,3 @@ appsettings.json
 *.log
 Logs/
 publish/
-=======
-/bin
-/obj
-/.vs
-appsettings.Development.json
-appsettings.json
-*.user
-*.suo
-*.cache
-*.log
-/Logs
-/publish
->>>>>>> origin/main
