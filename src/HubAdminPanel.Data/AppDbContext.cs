@@ -1,9 +1,10 @@
 ﻿using HubAdminPanel.Core.Entities;
+using HubAdminPanel.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HubAdminPanel.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : DbContext, IAppDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -16,6 +17,11 @@ namespace HubAdminPanel.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "Admin"},
+                new Role { Id = 2, Name = "User"}
+                );
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
