@@ -1,8 +1,9 @@
-﻿using HubAdminPanel.Core.DTOs;
+﻿using HubAdminPanel.Core.Features.Auth.Commands;
 using HubAdminPanel.Core.Features.Users.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HubAdminPanel.Api.Controllers
 {
@@ -32,7 +33,7 @@ namespace HubAdminPanel.Api.Controllers
 
             if (result != null && !string.IsNullOrEmpty(result.AccessToken))
             {
-                return Ok(result); 
+                return Ok(result);
             }
 
             return Unauthorized(result);
@@ -51,6 +52,19 @@ namespace HubAdminPanel.Api.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+            var result = await _mediator.Send(new LogoutUserCommand { UserId = int.Parse(userIdClaim) });
+
+            return result ? Ok("Logout successful.") : BadRequest("Logout unsuccessful.");
         }
     }
 }

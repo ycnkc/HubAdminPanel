@@ -1,7 +1,7 @@
 ﻿using HubAdminPanel.Core.DTOs;
 using MediatR;
 
-namespace HubAdminPanel.Core.Features.Users.Commands
+namespace HubAdminPanel.Core.Features.Auth.Commands
 {
     public class LoginUserCommand : IRequest<AuthResponseDto>
     {

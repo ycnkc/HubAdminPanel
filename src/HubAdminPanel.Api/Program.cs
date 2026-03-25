@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using HubAdminPanel.Core.Features.Auth.Commands;
 
 
 var builder = WebApplication.CreateBuilder(args);

@@ -3,7 +3,7 @@ using HubAdminPanel.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HubAdminPanel.Core.Features.Users.Commands
+namespace HubAdminPanel.Core.Features.Auth.Commands
 {
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, AuthResponseDto>
     {
@@ -34,7 +34,7 @@ namespace HubAdminPanel.Core.Features.Users.Commands
             var refreshToken = _tokenService.CreateRefreshToken();
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); 
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
 
             await _context.SaveChangesAsync(cancellationToken);
 
@@ -42,7 +42,7 @@ namespace HubAdminPanel.Core.Features.Users.Commands
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                Expiration = DateTime.Now.AddMinutes(15) 
+                Expiration = DateTime.Now.AddMinutes(15)
             };
         }
     }

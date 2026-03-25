@@ -3,7 +3,7 @@ using HubAdminPanel.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HubAdminPanel.Core.Features.Users.Commands
+namespace HubAdminPanel.Core.Features.Auth.Commands
 {
     public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponseDto>
     {

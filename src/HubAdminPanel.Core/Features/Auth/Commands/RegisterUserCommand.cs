@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace HubAdminPanel.Core.Features.Users.Commands
+namespace HubAdminPanel.Core.Features.Auth.Commands
 {
     public class RegisterUserCommand : IRequest<bool>
     {

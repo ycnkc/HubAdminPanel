@@ -2,7 +2,7 @@
 using HubAdminPanel.Core.Interfaces;
 using MediatR;
 
-namespace HubAdminPanel.Core.Features.Users.Commands
+namespace HubAdminPanel.Core.Features.Auth.Commands
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, bool>
     {
