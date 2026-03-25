@@ -1,6 +1,7 @@
 ﻿using HubAdminPanel.Core.DTOs;
 using HubAdminPanel.Core.Features.Users.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HubAdminPanel.Api.Controllers
@@ -29,12 +30,27 @@ namespace HubAdminPanel.Api.Controllers
         {
             var result = await _mediator.Send(command);
 
-            if (result.StartsWith("ey"))
+            if (result != null && !string.IsNullOrEmpty(result.AccessToken))
             {
-                return Ok(new { Token = result, Message = "Login successful." });
+                return Ok(result); 
             }
 
             return Unauthorized(result);
+        }
+
+        [Authorize]
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        {
+            try
+            {
+                var result = await _mediator.Send(command);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

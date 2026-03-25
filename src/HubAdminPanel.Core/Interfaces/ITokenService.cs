@@ -5,5 +5,6 @@ namespace HubAdminPanel.Core.Interfaces
     public interface ITokenService
     {
         string CreateToken(User user);
+        public string CreateRefreshToken();
     }
 }

@@ -48,6 +48,14 @@ namespace HubAdminPanel.Api.Services
             return tokenHandler.WriteToken(token);
         }
 
+        public string CreateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+
 
     }
 }
