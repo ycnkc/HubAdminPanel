@@ -1,18 +1,33 @@
 using HubAdminPanel.Api.Services;
-using HubAdminPanel.Core.Features.Users.Commands;
+using HubAdminPanel.Core.Features.Auth.Commands;
 using HubAdminPanel.Core.Interfaces;
 using HubAdminPanel.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using HubAdminPanel.Core.Features.Auth.Commands;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+var config = TypeAdapterConfig.GlobalSettings;
+config.Scan(Assembly.GetExecutingAssembly());
+builder.Services.AddSingleton(config);
+builder.Services.AddScoped<IMapper, ServiceMapper>();
+
 // Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMataeo",
+        policy => policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -22,11 +37,13 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Regis
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options => {
+.AddJwtBearer(options =>
+{
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -81,10 +98,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
+app.UseRouting();
+app.UseHttpsRedirection();
+app.UseCors("AllowMataeo");
 app.UseAuthorization();
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

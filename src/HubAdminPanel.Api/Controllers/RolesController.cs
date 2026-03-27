@@ -5,19 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HubAdminPanel.Api.Controllers
 {
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
-    public class RoleController : ControllerBase 
+    public class RolesController : ControllerBase 
     {
         private readonly IMediator _mediator;
 
-        public RoleController(IMediator mediator)
+        public RolesController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpPost]
+        [HttpPost("create-role")]
         public async Task<IActionResult> Create(CreateRoleCommand command)
         {
             var result = await _mediator.Send(command);
