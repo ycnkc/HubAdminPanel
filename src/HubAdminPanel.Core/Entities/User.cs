@@ -1,5 +1,9 @@
 ﻿namespace HubAdminPanel.Core.Entities
 {
+    /// <summary>
+    /// Represents a system user entity. 
+    /// This is the primary identity object used for authentication and authorization.
+    /// </summary>
     public class User
     {
         public int Id { get; set; }

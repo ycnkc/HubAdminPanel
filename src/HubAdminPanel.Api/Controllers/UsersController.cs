@@ -67,10 +67,10 @@ namespace HubAdminPanel.Api.Controllers
         /// Retrieves a comprehensive list of all system users.
         /// </summary>
         /// <returns>A collection of User data.</returns>
-        [HttpGet] 
-        public async Task<IActionResult> GetAll()
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllUsersQuery query)
         {
-            var result = await _mediator.Send(new GetAllUsersQuery());
+            var result = await _mediator.Send(query);
             return Ok(result);
         }
 

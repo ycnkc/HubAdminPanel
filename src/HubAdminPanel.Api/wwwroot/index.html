@@ -286,6 +286,10 @@
                                           </tbody>
                                       </table>
                                   </div>
+                                  <nav aria-label="Page navigation">
+                                      <ul class="pagination justify-content-center mt-4" id="paginationList">
+                                      </ul>
+                                  </nav>
                               </div>
                           </div>
                           <!--/ Data Tables -->
@@ -486,6 +490,7 @@
 
           // Initialization
           document.addEventListener('DOMContentLoaded', async () => {
+              fetchUsers(1);
               if (!checkAuth()) return;
 
               // Navbar info
@@ -495,8 +500,14 @@
               if (roleEl) roleEl.innerText = localStorage.getItem('userRole') || 'Guest';
 
               try {
-                  const response = await api.get('/users');
-                  allUsers = response.data;
+                  const response = await api.get('/users', {
+                      params: {
+                          pageNumber: 1, 
+                          pageSize: 5
+                      }
+                  });
+                  allUsers = response.data.items;
+                  const totalCount = response.data.totalCount;
 
                   updateDashboardStats(allUsers);
                   renderUserTable(allUsers);
@@ -585,7 +596,51 @@
               }
           }
 
-          // Merkezi Hata Yönetimi
+          //page numbers
+          function renderPagination(data) {
+              const paginationList = document.getElementById('paginationList');
+              if (!paginationList) return;
+
+              paginationList.innerHTML = ""; 
+
+              
+              for (let i = 1; i <= data.totalPages; i++) {
+                  const isActive = i === data.pageNumber ? 'active' : '';
+
+                  const li = `
+            <li class="page-item ${isActive}">
+                <a class="page-link" href="javascript:void(0);" onclick="fetchUsers(${i})">
+                    ${i}
+                </a>
+            </li>`;
+
+                  paginationList.innerHTML += li;
+              }
+          }
+
+          // fetching data
+          async function fetchUsers(page = 1) {
+              try {
+                  const response = await api.get('/users', {
+                      params: {
+                          pageNumber: page,
+                          pageSize: 5
+                      }
+                  });
+
+                  const pagedData = response.data; 
+                  allUsers = pagedData.items;     
+
+                  renderUserTable(allUsers);
+
+                  renderPagination(pagedData);
+
+              } catch (error) {
+                  console.error("Sayfa yükleme hatası:", error);
+              }
+          }
+
+          //Handle exception
           function handleApiError(error) {
               console.error("API Hatası:", error);
               if (error.response?.status === 401) {

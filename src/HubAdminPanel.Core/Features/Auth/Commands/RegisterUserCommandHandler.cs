@@ -4,15 +4,29 @@ using MediatR;
 
 namespace HubAdminPanel.Core.Features.Auth.Commands
 {
+    /// <summary>
+    /// Handles the self-registration process for new users.
+    /// This handler manages password security and assigns initial default access levels.
+    /// </summary>
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, bool>
     {
         private readonly IAppDbContext _context;
 
+        /// <summary>
+        /// Initializes the registration handler with the application's database context.
+        /// </summary>
+        /// <param name="context">The database context used for persisting user data.</param>
         public RegisterUserCommandHandler(IAppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Processes the registration request by hashing the password and creating a new user entity.
+        /// </summary>
+        /// <param name="request">The command containing registration details (username, email, password).</param>
+        /// <param name="cancellationToken">Propagates notification that the operation should be canceled.</param>
+        /// <returns>True if the user was successfully created; otherwise, false.</returns>
         public async Task<bool> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             string salt = BCrypt.Net.BCrypt.GenerateSalt(12);
