@@ -16,6 +16,7 @@ namespace HubAdminPanel.Core.Features.Users.Queries
     public class GetAllUsersQuery : IRequest<PagedResult<UserDto>> 
     {
         public int PageNumber { get; set; } = 1; 
-        public int PageSize { get; set; } = 5;   
+        public int PageSize { get; set; } = 5; 
+        public string? SearchTerm { get; set; }
     }
 }

@@ -23,6 +23,13 @@ namespace HubAdminPanel.Core.Features.Users.Queries
                 .ThenInclude(ur => ur.Role)
                 .AsNoTracking();
 
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+            {
+                var term = request.SearchTerm.ToLower();
+                query = query.Where(u => u.Username.ToLower().Contains(term) ||
+                                         u.Email.ToLower().Contains(term));
+            }
+
             var totalCount = await query.CountAsync(cancellationToken);
 
             var items = await query
