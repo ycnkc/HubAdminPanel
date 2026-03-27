@@ -7,15 +7,28 @@ using System.Text;
 
 namespace HubAdminPanel.Api.Services
 {
+    /// <summary>
+    /// Service responsible for generating and managing security tokens.
+    /// Handles both short-lived JWT Access Tokens and long-lived Refresh Tokens.
+    /// </summary>
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
 
+        /// <summary>
+        /// Initializes the TokenService with application configuration.
+        /// </summary>
+        /// <param name="configuration">The configuration to access JWT settings like Key, Issuer, and Audience.</param>
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Generates a signed JWT Access Token containing user information and roles as claims.
+        /// </summary>
+        /// <param name="user">The user entity for whom the token is being created. Roles must be included in the entity.</param>
+        /// <returns>A serialized JWT string.</returns>
         public string CreateToken(User user)
         {
             var claims = new List<Claim>
@@ -48,6 +61,10 @@ namespace HubAdminPanel.Api.Services
             return tokenHandler.WriteToken(token);
         }
 
+        /// <summary>
+        /// Generates a high-entropy cryptographically secure random string to be used as a Refresh Token.
+        /// </summary>
+        /// <returns>A base64-encoded random string.</returns>
         public string CreateRefreshToken()
         {
             var randomNumber = new byte[64];

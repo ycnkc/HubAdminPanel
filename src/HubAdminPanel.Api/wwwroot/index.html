@@ -12,7 +12,7 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
 
-    <title>Demo: Dashboard - Analytics | Materio - Bootstrap Dashboard FREE</title>
+    <title>Hub Admin Panel</title>
 
     <meta name="description" content="" />
 
@@ -131,14 +131,7 @@
 
                           <ul class="navbar-nav flex-row align-items-center ms-md-auto">
                               <!-- Place this tag where you want the button to render. -->
-                              <li class="nav-item lh-1 me-4">
-                                  <a class="github-button"
-                                     href="https://github.com/themeselection/materio-bootstrap-html-admin-template-free"
-                                     data-icon="octicon-star"
-                                     data-size="large"
-                                     data-show-count="true"
-                                     aria-label="Star themeselection/materio-html-admin-template-free on GitHub">Star</a>
-                              </li>
+                              
 
                               <!-- User -->
                               <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -360,33 +353,15 @@
                   <!-- Footer -->
                   <footer class="content-footer footer bg-footer-theme">
                       <div class="container-xxl">
-                          <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
-                              <div class="mb-2 mb-md-0">
+                          <div class="footer-container d-flex align-items-center justify-content-center py-4 flex-md-row flex-column">
+                              
                                   &#169;
                                   <script>
                                       document.write(new Date().getFullYear());
                                   </script>
-                                  , made with ❤️ by
-                                  <a href="https://themeselection.com" target="_blank" class="footer-link fw-medium">ThemeSelection</a>
-                              </div>
-                              <div class="d-none d-lg-inline-block">
-                                  <a href="https://themeselection.com/item/category/admin-templates/"
-                                     target="_blank"
-                                     class="footer-link me-4">Admin Templates</a>
+                                  
+                              
 
-                                  <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>
-
-                                  <a href="https://themeselection.com/item/category/bootstrap-templates/"
-                                     target="_blank"
-                                     class="footer-link me-4">Bootstrap Templates</a>
-                                  <a href="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/"
-                                     target="_blank"
-                                     class="footer-link me-4">Documentation</a>
-
-                                  <a href="https://github.com/themeselection/materio-bootstrap-html-admin-template-free/issues"
-                                     target="_blank"
-                                     class="footer-link">Support</a>
-                              </div>
                           </div>
                       </div>
                   </footer>
@@ -430,136 +405,123 @@
       <script src="/assets/js/dashboards-analytics.js"></script>
 
       <!-- Place this tag before closing body tag for github widget button. -->
-      <script async="async" defer="defer" src="https://buttons.github.io/buttons.js"></script>
+      
 
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <script src="assets/js/api-service.js"></script>
+
       <script>
           let allUsers = [];
 
-          const token = localStorage.getItem('accessToken');
-          console.log("Kontrol edilen Token:", token);
+          // 1. Session and Token control
+          const checkAuth = () => {
+              const token = localStorage.getItem('accessToken');
+              if (!token) {
+                  console.warn("Yetkisiz erişim: Login sayfasına yönlendiriliyor...");
+                  window.location.href = 'login.html';
+                  return null;
+              }
+              return token;
+          };
 
-          if (!token) {
-              console.warn("Token bulunamadı, login sayfasına yönlendiriliyor...");
-              window.location.href = 'login.html';
-          }
+          // 2. Updating dashboard statistics
+          const updateDashboardStats = (users) => {
+              const stats = {
+                  total: users.length,
+                  active: users.filter(u => u.isActive || u.IsActive).length,
+                  admins: users.filter(u => u.roles?.includes('Admin')).length
+              };
 
+              const elements = {
+                  total: document.getElementById('statTotalUsers'),
+                  active: document.getElementById('statActiveUsers'),
+                  admins: document.getElementById('statAdminCount')
+              };
 
-          document.addEventListener('DOMContentLoaded', async () => {
+              if (elements.total) elements.total.innerText = stats.total;
+              if (elements.active) elements.active.innerText = stats.active;
+              if (elements.admins) elements.admins.innerText = stats.admins;
+          };
 
-              if (!token) return;
-
+          // 3. Rendering user table
+          const renderUserTable = (users) => {
               const tableBody = document.getElementById('userTableBody');
+              if (!tableBody) return;
+
+              if (users.length === 0) {
+                  tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Sistemde kullanıcı bulunamadı.</td></tr>';
+                  return;
+              }
+
+              tableBody.innerHTML = users.map(user => {
+                  const userId = user.id || user.Id;
+                  const isActive = user.isActive || user.IsActive;
+                  const username = user.username || user.Username || 'İsimsiz';
+                  const roles = user.roles?.length > 0 ? user.roles.join(', ') : 'Rol Atanmamış';
+
+                  return `
+            <tr>
+                <td>
+                    <i class="ri-user-line ri-22px text-primary me-2"></i>
+                    <strong>${username}</strong>
+                </td>
+                <td>${user.email || '-'}</td>
+                <td><span class="badge bg-label-primary">${roles}</span></td>
+                <td>
+                    <span class="badge ${isActive ? 'bg-label-success' : 'bg-label-secondary'}">
+                        ${isActive ? 'Active' : 'Suspended'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="openEditModal(${userId})">
+                        <i class="ri-edit-box-line"></i> Düzenle
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${userId})">
+                        <i class="ri-delete-bin-line"></i> Sil
+                    </button>
+                </td>
+            </tr>`;
+              }).join('');
+          };
+
+          // Initialization
+          document.addEventListener('DOMContentLoaded', async () => {
+              if (!checkAuth()) return;
+
+              // Navbar info
+              const nameEl = document.getElementById('navUserName');
+              const roleEl = document.getElementById('navUserRole');
+              if (nameEl) nameEl.innerText = localStorage.getItem('username') || 'User';
+              if (roleEl) roleEl.innerText = localStorage.getItem('userRole') || 'Guest';
 
               try {
-                  console.log("Backend'e istek gönderiliyor: https://localhost:7016/api/users");
-
-                  console.log("API nesnesi kontrol ediliyor:", typeof api);
                   const response = await api.get('/users');
-
                   allUsers = response.data;
 
-
-                  function updateDashboardStats() {
-                      const total = allUsers.length;
-                      const active = allUsers.filter(u => u.isActive || u.IsActive).length;
-                      const admins = allUsers.filter(u => u.roles && u.roles.includes('Admin')).length;
-
-                      document.getElementById('statTotalUsers').innerText = total;
-                      document.getElementById('statActiveUsers').innerText = active;
-                      document.getElementById('statAdminCount').innerText = admins;
-                  }
-
-
-
-                  console.log("Backend'den gelen veri:", response.data);
-
-                  if (tableBody) {
-                      tableBody.innerHTML = '';
-
-                      if (response.data.length === 0) {
-                          tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Sistemde kullanıcı bulunamadı.</td></tr>';
-                      }
-
-                      updateDashboardStats();
-                      response.data.forEach(user => {
-
-                          console.log("Gelen kullanıcı objesi:", user);
-
-                          const statusBadge = (user.isActive)
-                              ? '<span class="badge bg-label-success">Active</span>'
-                              : '<span class="badge bg-label-secondary">Suspended</span>';
-
-                          const row = `
-                                  <tr>
-                                      <td>
-                                          <i class="ri-user-line ri-22px text-primary me-2"></i>
-                                          <strong>${user.username || 'İsimsiz'}</strong>
-                                      </td>
-                                      <td>${user.email || '-'}</td>
-                                      <td>
-                                          <span class="badge bg-label-primary">
-                                          ${user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'Rol Atanmamış'}
-                                      </span>
-                                      </td>
-                                      <td>
-                                      <span class="badge ${(user.isActive === true || user.IsActive === true) ? 'bg-label-success' : 'bg-label-secondary'}">
-                                          ${(user.isActive === true || user.IsActive === true) ? 'Active' : 'Suspended'}
-                                      </span>
-                                      </td>
-                                      <td>
-
-
-                                      <button class="btn btn-sm btn-outline-primary me-2" onclick="openEditModal(${user.id || user.Id})">
-                                          <i class="ri-edit-box-line"></i> Düzenle
-                                      </button>
-                                          <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id || user.Id})">
-                                              <i class="ri-delete-bin-line"></i> Sil
-                                          </button>
-                                      </td>
-                                  </tr>`;
-                          tableBody.innerHTML += row;
-                      });
-                  }
+                  updateDashboardStats(allUsers);
+                  renderUserTable(allUsers);
 
               } catch (error) {
-                  console.error("İstek sırasında hata oluştu:", error);
-
-                  if (error.response) {
-
-                      console.error("Hata Kodu:", error.response.status);
-
-                      if (error.response.status === 401) {
-                          alert("Oturum süreniz dolmuş veya yetkiniz yok.");
-                          window.location.href = 'login.html';
-                      } else if (error.response.status === 404) {
-                          console.error("Adres bulunamadı (404)! Lütfen Controller rotasını kontrol edin.");
-                      }
-                  } else {
-
-                      alert("Sunucuya bağlanılamadı. Lütfen API'nin çalıştığından emin olun.");
-                  }
+                  handleApiError(error);
               }
           });
 
-
+          
+          //API Functions (CRUD)
           async function deleteUser(id) {
-              if (confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) {
-                  try {
-                      const token = localStorage.getItem('accessToken');
-                      await api.delete(`/users/${id}`);
-                      alert("Kullanıcı başarıyla silindi.");
-                      location.reload();
-                  } catch (error) {
-                      console.error("Silme hatası:", error);
-                      alert("Silme işlemi başarısız oldu.");
-                  }
+              if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
+
+              try {
+                  await api.delete(`/users/${id}`);
+                  alert("Kullanıcı başarıyla silindi.");
+                  location.reload();
+              } catch (error) {
+                  console.error("Silme hatası:", error);
+                  alert("Silme işlemi başarısız oldu.");
               }
           }
 
           async function saveUser() {
-              
               const userData = {
                   Username: document.getElementById('newUserName').value,
                   Email: document.getElementById('newUserEmail').value,
@@ -574,87 +536,65 @@
 
               try {
                   await api.post('/users/create', userData);
-
                   alert("Kullanıcı başarıyla eklendi!");
                   location.reload();
               } catch (error) {
-                  console.error("Ekleme Hatası:", error);
+                  alert("Ekleme yapılırken bir hata oluştu.");
               }
           }
 
           function openEditModal(userId) {
               const user = allUsers.find(u => (u.id || u.Id) === userId);
-              if (user) {
-                  document.getElementById('editUserId').value = user.id || user.Id;
-                  document.getElementById('editUserName').value = user.username || user.Username;
-                  document.getElementById('editUserEmail').value = user.email || user.Email;
-                  document.getElementById('editIsActive').checked = user.isActive || user.IsActive;
+              if (!user) return;
 
+              document.getElementById('editUserId').value = user.id || user.Id;
+              document.getElementById('editUserName').value = user.username || user.Username;
+              document.getElementById('editUserEmail').value = user.email || user.Email;
+              document.getElementById('editIsActive').checked = user.isActive || user.IsActive;
 
-                  const roleSelect = document.getElementById('editUserRole');
-                  if (user.roles && user.roles.includes('Admin')) {
-                      roleSelect.value = "1";
-                  } else {
-                      roleSelect.value = "2";
-                  }
+              const roleSelect = document.getElementById('editUserRole');
+              roleSelect.value = user.roles?.includes('Admin') ? "1" : "2";
 
-                  const modalElement = document.getElementById('editUserModal');
-                  const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-                  myModal.show();
-              }
+              const modalElement = document.getElementById('editUserModal');
+              bootstrap.Modal.getOrCreateInstance(modalElement).show();
           }
 
           async function updateUser() {
               const id = document.getElementById('editUserId').value;
-
-              
-              const roleId = document.getElementById('editUserRole').value;
-
               const data = {
                   Id: parseInt(id),
                   Username: document.getElementById('editUserName').value,
                   Email: document.getElementById('editUserEmail').value,
                   IsActive: document.getElementById('editIsActive').checked,
-                  RoleIds: [parseInt(roleId)]
+                  RoleIds: [parseInt(document.getElementById('editUserRole').value)]
               };
-
-              console.log("Güncellenecek Veri:", data); 
 
               try {
                   await api.put(`/users/${id}`, data);
-                  alert("Güncellendi!");
+                  alert("Başarıyla güncellendi!");
                   location.reload();
               } catch (error) {
-                  console.error("Hata:", error);
+                  console.error("Güncelleme hatası:", error);
               }
           }
 
-          document.addEventListener('DOMContentLoaded', () => {
-
-              const savedName = localStorage.getItem('username');
-              const savedRole = localStorage.getItem('userRole');
-
-
-              const nameEl = document.getElementById('navUserName');
-              const roleEl = document.getElementById('navUserRole');
-
-              if (nameEl) nameEl.innerText = savedName;
-              if (roleEl) roleEl.innerText = savedRole;
-          });
-
-
           function logout() {
               if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-
-                  localStorage.removeItem('accessToken');
-                  localStorage.removeItem('username');
-                  localStorage.removeItem('userRole');
-
-
+                  localStorage.clear();
                   window.location.href = 'login.html';
               }
           }
 
+          // Merkezi Hata Yönetimi
+          function handleApiError(error) {
+              console.error("API Hatası:", error);
+              if (error.response?.status === 401) {
+                  alert("Oturum süreniz dolmuş.");
+                  window.location.href = 'login.html';
+              } else {
+                  alert("Sunucuya bağlanılamadı. API'nin çalıştığından emin olun.");
+              }
+          }
       </script>
 
   </body>

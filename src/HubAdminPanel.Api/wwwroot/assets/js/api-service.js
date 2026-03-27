@@ -1,10 +1,19 @@
-﻿const api = axios.create({
+﻿/**
+ * Axios instance pre-configured with the base URL and default headers.
+ * This serves as the primary gateway for communicating with the HubAdminPanel API.
+ */
+const api = axios.create({
     baseURL: 'https://localhost:7016/api',
     headers: {
         'Content-Type': 'application/json'
     }
 });
 
+/**
+ * Request Interceptor:
+ * Automatically injects the JWT Access Token into the Authorization header for every outgoing request.
+ * This ensures that protected endpoints (like Users or Roles) recognize the authenticated user.
+ */
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('accessToken');
@@ -18,6 +27,10 @@ api.interceptors.request.use(
     }
 );
 
+/**
+ * Response Interceptor:
+ * Globally handles API responses and manages session expiration errors.
+ */
 api.interceptors.response.use(
     (response) => response, 
     (error) => {

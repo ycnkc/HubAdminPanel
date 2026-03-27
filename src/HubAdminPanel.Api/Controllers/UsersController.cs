@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HubAdminPanel.Api.Controllers
 {
+    /// <summary>
+    /// Provides endpoints for managing system users.
+    /// Acts as an entry point for administrative user operations like creation, updates, and deletion.
+    /// </summary>
     //[Authorize(Roles = "Admin")]
     [ApiController] 
     [Route("api/[controller]")]
@@ -13,11 +17,20 @@ namespace HubAdminPanel.Api.Controllers
     {
         private readonly IMediator _mediator;
 
+        /// <summary>
+        /// Initializes the controller with the MediatR mediator.
+        /// </summary>
+        /// <param name="mediator">The mediator instance to dispatch commands and queries.</param>
         public UsersController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Creates a new system user.
+        /// </summary>
+        /// <param name="command">The details of the user to be created.</param>
+        /// <returns>A success message and the newly created User ID, or a Bad Request error.</returns>
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateUserCommand command)
         {
@@ -32,6 +45,12 @@ namespace HubAdminPanel.Api.Controllers
         }
 
 
+        /// <summary>
+        /// Updates an existing user's information.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to update.</param>
+        /// <param name="command">The updated user data.</param>
+        /// <returns>A success message if updated; otherwise, a Not Found response.</returns>
         [HttpPut("{id}")] 
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserCommand command)
         {
@@ -44,6 +63,10 @@ namespace HubAdminPanel.Api.Controllers
             return Ok("User updated successfully.");
         }
 
+        /// <summary>
+        /// Retrieves a comprehensive list of all system users.
+        /// </summary>
+        /// <returns>A collection of User data.</returns>
         [HttpGet] 
         public async Task<IActionResult> GetAll()
         {
@@ -51,6 +74,11 @@ namespace HubAdminPanel.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Permanently removes a user from the system.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to delete.</param>
+        /// <returns>A success message if deleted; otherwise, a Not Found response.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

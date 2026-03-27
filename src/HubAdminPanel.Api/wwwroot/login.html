@@ -222,13 +222,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        
+        /**
+        * Login logic for the HubAdminPanel frontend.
+        * This script handles user authentication, JWT decoding, and session initialization.
+        */
         document.addEventListener('DOMContentLoaded', function () {
             const loginForm = document.getElementById('formAuthentication');
 
             if (loginForm) {
                 console.log("Form başarıyla yakalandı!"); 
 
+                /**
+                * Event listener for the form submission.
+                * Prevents default behavior to handle the API request asynchronously.
+                */
                 loginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     console.log("Düğmeye basıldı, istek gönderiliyor...");
@@ -237,6 +244,7 @@
                     const passwordInput = document.getElementById('password').value;
 
                     try {
+                        // Sending credentials to the HubAdminPanel Auth API.
                         const response = await axios.post('https://localhost:7016/api/Auth/login', {
                             username: emailInput,
                             password: passwordInput
@@ -247,11 +255,15 @@
                         if (data.accessToken) {
                             localStorage.setItem('accessToken', data.accessToken);
 
-                            
+                            /**
+                            * JWT Decoding:
+                            * Extracts the payload without verifying the signature (which is done on the backend).
+                            * This allows the UI to personalize the experience (e.g., showing the user's name).
+                            */
                             const decoded = jwt_decode(data.accessToken);
                             console.log("Token İçeriği:", decoded);
 
-                            
+                            // Standardizing claim extraction across different JWT naming conventions.
                             const name = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || decoded.unique_name || decoded.sub;
                             const role = decoded["http://schemas.xmlsoap.org/ws/2008/06/identity/claims/role"] || decoded.role;
 

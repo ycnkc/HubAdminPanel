@@ -1,5 +1,4 @@
 ﻿using HubAdminPanel.Core.Features.Auth.Commands;
-using HubAdminPanel.Core.Features.Users.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,18 +6,30 @@ using System.Security.Claims;
 
 namespace HubAdminPanel.Api.Controllers
 {
-
+    /// <summary>
+    /// Manages authentication and session-related operations.
+    /// Provides endpoints for user registration, login, token refresh, and secure logout.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IMediator _mediator;
 
+        /// <summary>
+        /// Initializes the AuthController with the MediatR mediator.
+        /// </summary>
+        /// <param name="mediator">The mediator instance to dispatch authentication commands.</param>
         public AuthController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Registers a new user into the system with default permissions.
+        /// </summary>
+        /// <param name="command">Registration details including username, email, and password.</param>
+        /// <returns>A success message upon successful registration.</returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
         {
@@ -26,6 +37,11 @@ namespace HubAdminPanel.Api.Controllers
             return Ok("Registered successfully.");
         }
 
+        /// <summary>
+        /// Authenticates a user and issues a set of JWT Access and Refresh tokens.
+        /// </summary>
+        /// <param name="command">The user's login credentials.</param>
+        /// <returns>An AuthResponseDto containing tokens if successful; otherwise, Unauthorized.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
         {
@@ -39,6 +55,12 @@ namespace HubAdminPanel.Api.Controllers
             return Unauthorized(result);
         }
 
+        /// <summary>
+        /// Exchanges a valid Refresh Token for a new pair of Access and Refresh tokens.
+        /// Requires an active authorization header to initiate the refresh flow.
+        /// </summary>
+        /// <param name="command">The current refresh token to be validated.</param>
+        /// <returns>A new set of tokens or a Bad Request if the refresh token is invalid/expired.</returns>
         [Authorize]
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
@@ -54,6 +76,12 @@ namespace HubAdminPanel.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Terminates the current user session by invalidating the refresh token in the database.
+        /// Identity is extracted from the 'NameIdentifier' claim of the authenticated user.
+        /// </summary>
+        /// <returns>A success message if the session was successfully terminated.</returns>
+        [Authorize]
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
