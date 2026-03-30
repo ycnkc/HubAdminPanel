@@ -1,6 +1,7 @@
 ﻿using HubAdminPanel.Core.Entities;
 using HubAdminPanel.Core.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace HubAdminPanel.Core.Features.Users.Commands
 {
@@ -30,6 +31,14 @@ namespace HubAdminPanel.Core.Features.Users.Commands
         /// <returns>The newly created user's unique identifier (Id).</returns>
         public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
+            var isEmailExists = await _context.Users
+                .AnyAsync(u => u.Email == request.Email, cancellationToken);
+
+            if (isEmailExists)
+            {
+                throw new Exception("Bu e-posta adresi zaten bir kullanıcı tarafından kullanılıyor.");
+            }
+
             // Create the main user entity. 
             // Note: Password is hashed using BCrypt to ensure security before persistence.
             var user = new User

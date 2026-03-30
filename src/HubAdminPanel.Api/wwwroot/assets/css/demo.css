@@ -3,6 +3,10 @@
 * File include item demo only specific css only
 ******************************************************************************/
 
+.swal2-container {
+    z-index: 9999 !important;
+}
+
 .menu .app-brand.demo {
   height: 64px;
 }

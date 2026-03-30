@@ -1,678 +1,357 @@
-<!doctype html>
-
-<html
-  lang="en"
-  class="layout-menu-fixed layout-compact"
-  data-assets-path="/assets/"
-  data-template="vertical-menu-template-free">
+<!intertype html>
+<html lang="en" class="layout-menu-fixed layout-compact" data-assets-path="/assets/" data-template="vertical-menu-template-free" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
 
-    <title>Hub Admin Panel</title>
+    <title>Hub Admin Panel - Dashboard</title>
 
     <meta name="description" content="" />
 
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&ampdisplay=swap"
-          rel="stylesheet" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
 
-    <!-- Core CSS -->
-    <!-- build:css assets/vendor/css/theme.css -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
-    <link rel="stylesheet" href=" /assets/vendor/libs/node-waves/node-waves.css" />
-
+    <link rel="stylesheet" href="/assets/vendor/libs/node-waves/node-waves.css" />
     <link rel="stylesheet" href="/assets/vendor/css/core.css" />
     <link rel="stylesheet" href="/assets/css/demo.css" />
-
-    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="/assets/css/dark-theme.css" />
+    
 
     <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-
-    <!-- endbuild -->
-
     <link rel="stylesheet" href="/assets/vendor/libs/apex-charts/apex-charts.css" />
 
-    <!-- Page CSS -->
-    <!-- Helpers -->
+
     <script src="/assets/vendor/js/helpers.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Config: Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file. -->
-
     <script src="/assets/js/config.js"></script>
-
 </head>
 
-  <body>
-      <!-- Layout wrapper -->
-      <div class="layout-wrapper layout-content-navbar">
-          <div class="layout-container">
-              <!-- Menu -->
-
-              <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-                  <div class="app-brand demo">
-                      <a href="index.html" class="app-brand-link">
-                          <span class="app-brand-text demo menu-text fw-semibold ms-2">HubAdmin</span>
-                      </a>
-                  </div>
-
-                  <div class="menu-inner-shadow"></div>
-
-                  <ul class="menu-inner py-1">
-                      <li class="menu-item active" id="menu-dashboard">
-                          <a href="index.html" class="menu-link">
-                              <i class="menu-icon tf-icons ri-home-smile-line"></i>
-                              <div>Dashboard</div>
-                          </a>
-                      </li>
-
-                      <li class="menu-item" id="menu-users">
-                          <a href="users.html" class="menu-link">
-                              <i class="menu-icon tf-icons ri-user-settings-line"></i>
-                              <div>Kullanıcı Yönetimi</div>
-                          </a>
-                      </li>
-
-                      <li class="menu-item" id="menu-roles">
-                          <a href="roles.html" class="menu-link">
-                              <i class="menu-icon tf-icons ri-shield-keyhole-line"></i>
-                              <div>Rol ve Yetkiler</div>
-                          </a>
-                      </li>
-
-                      <li class="menu-header mt-4"><span class="menu-header-text">Sistem</span></li>
-
-                      <li class="menu-item">
-                          <a href="settings.html" class="menu-link">
-                              <i class="menu-icon tf-icons ri-settings-4-line"></i>
-                              <div>Genel Ayarlar</div>
-                          </a>
-                      </li>
-                  </ul>
-              </aside>
-              <!-- / Menu -->
-              <!-- Layout container -->
-              <div class="layout-page">
-                  <!-- Navbar -->
-
-                  <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
-                       id="layout-navbar">
-                      <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
-                          <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
-                              <i class="icon-base ri ri-menu-line icon-md"></i>
-                          </a>
-                      </div>
-
-                      <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
-                          <!-- Search -->
-                          
-                          <!-- /Search -->
-
-                          <ul class="navbar-nav flex-row align-items-center ms-md-auto">
-                              <!-- Place this tag where you want the button to render. -->
-                              
-
-                              <!-- User -->
-                              <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                                  <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
-                                      <div class="avatar avatar-online">
-                                          <img src="../assets/img/avatars/1.png" alt="User Avatar" class="rounded-circle" />
-                                      </div>
-                                  </a>
-                                  <ul class="dropdown-menu dropdown-menu-end">
-                                      <li>
-                                          <a class="dropdown-item" href="#">
-                                              <div class="d-flex">
-                                                  <div class="flex-shrink-0 me-3">
-                                                      <div class="avatar avatar-online">
-                                                          <img src="../assets/img/avatars/1.png" alt="User Avatar" class="w-px-40 h-auto rounded-circle" />
-                                                      </div>
-                                                  </div>
-                                                  <div class="flex-grow-1">
-                                                      <h6 class="mb-0" id="navUserName">Yükleniyor...</h6>
-                                                      <small class="text-body-secondary" id="navUserRole">Kullanıcı</small>
-                                                  </div>
-                                              </div>
-                                          </a>
-                                      </li>
-                                      <li><div class="dropdown-divider my-1"></div></li>
-                                      <li>
-                                          <a class="dropdown-item" href="profile.html">
-                                              <i class="icon-base ri ri-user-line icon-md me-3"></i>
-                                              <span>My Profile</span>
-                                          </a>
-                                      </li>
-                                      <li><div class="dropdown-divider my-1"></div></li>
-                                      <li>
-                                          <div class="d-grid px-4 pt-2 pb-1">
-                                              <a class="btn btn-danger d-flex" href="javascript:void(0);" onclick="logout()">
-                                                  <small class="align-middle">Logout</small>
-                                                  <i class="ri ri-logout-box-r-line ms-2 ri-xs"></i>
-                                              </a>
-                                          </div>
-                                      </li>
-                                  </ul>
-                              </li>
-                  </nav>
-
-                  <!-- / Navbar -->
-                  <!-- Content wrapper -->
-                  <div class="content-wrapper">
-
-                      <!-- Content -->
-                      <div class="container-xxl flex-grow-1 container-p-y">
-
-                          <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                              <i class="ri-user-add-line me-1"></i> Yeni Kullanıcı Ekle
-                          </button>
-
-                          <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered">
-                                  <div class="modal-content">
-                                      <div class="modal-header">
-                                          <h5 class="modal-title">Yeni Kullanıcı Kaydı</h5>
-                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                      </div>
-                                      <div class="modal-body">
-                                          <form id="addUserForm">
-                                              <div class="mb-3">
-                                                  <label class="form-label">Kullanıcı Adı</label>
-                                                  <input type="text" id="newUserName" class="form-control" placeholder="yaren_dev" required />
-                                              </div>
-                                              <div class="mb-3">
-                                                  <label class="form-label">E-posta</label>
-                                                  <input type="email" id="newUserEmail" class="form-control" placeholder="yaren@example.com" required />
-                                              </div>
-                                              <div class="mb-3">
-                                                  <label class="form-label">Şifre</label>
-                                                  <input type="password" id="newUserPassword" class="form-control" placeholder="...." required />
-                                              </div>
-                                              <label class="form-label">Yetki</label>
-                                              <select id="newUserRole" class="form-select">
-                                                  <option value="1">Yönetici (Admin)</option>
-                                                  <option value="2" selected>Standart Kullanıcı (User)</option>
-                                              </select>
-                                          </form>
-                                      </div>
-                                      <div class="modal-footer">
-                                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                                          <button type="button" class="btn btn-primary" onclick="saveUser()">Kaydet</button>
-                                      </div>
-                                  </div>
-
-
-
-                              </div>
-
-
-
-
-
-                          </div>
-
-                          <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered">
-                                  <div class="modal-content">
-                                      <div class="modal-header">
-                                          <h5 class="modal-title">Kullanıcı Düzenle</h5>
-                                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                      </div>
-                                      <div class="modal-body">
-                                          <input type="hidden" id="editUserId">
-
-                                          <div class="mb-3">
-                                              <label class="form-label">Kullanıcı Adı</label>
-                                              <input type="text" id="editUserName" class="form-control">
-                                          </div>
-                                          <div class="mb-3">
-                                              <label class="form-label">E-posta</label>
-                                              <input type="email" id="editUserEmail" class="form-control">
-                                          </div>
-                                          <div class="form-check form-switch mb-3">
-                                              <input class="form-check-input" type="checkbox" id="editIsActive">
-                                              <label class="form-check-label" for="editIsActive">Kullanıcı Aktif</label>
-                                          </div>
-                                          <div class="mb-3">
-                                              <label class="form-label">Kullanıcı Rolü</label>
-                                              <select id="editUserRole" class="form-select">
-                                                  <option value="1">Admin</option>
-                                                  <option value="2">User</option>
-                                              </select>
-                                          </div>
-                                      </div>
-                                      <div class="modal-footer">
-                                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                                          <button type="button" class="btn btn-primary" onclick="updateUser()">Güncelle</button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <!-- Deposit / Withdraw -->
-                          <!-- Data Tables -->
-                          <div class="row mb-3">
-                              <div class="col-md-4">
-                                  <div class="input-group">
-                                      <span class="input-group-text"><i class="ri-search-line"></i></span>
-                                      <input type="text"
-                                             id="userSearchInput"
-                                             class="form-control"
-                                             placeholder="Kullanıcı adı veya e-posta ara...">
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-12">
-                              <div class="card overflow-hidden">
-                                  <div class="table-responsive">
-                                      <table class="table table-sm">
-                                          <thead>
-                                              <tr>
-                                                  <th class="text-truncate">User</th>
-                                                  <th class="text-truncate">Email</th>
-                                                  <th class="text-truncate">Role</th>
-                                                  <th class="text-truncate">Status</th>
-                                              </tr>
-                                          </thead>
-                                          <tbody id="userTableBody">
-                                          </tbody>
-                                      </table>
-                                  </div>
-                                  <nav aria-label="Page navigation">
-                                      <ul class="pagination justify-content-center mt-4" id="paginationList">
-                                      </ul>
-                                  </nav>
-                              </div>
-                          </div>
-                          <!--/ Data Tables -->
-                          <hr></hr>
-                          <div class="row g-4 mb-4">
-                              <div class="col-sm-6 col-xl-3">
-                                  <div class="card">
-                                      <div class="card-body">
-                                          <div class="d-flex align-items-center justify-content-between">
-                                              <div>
-                                                  <p class="mb-1">Toplam Kullanıcı</p>
-                                                  <h4 class="mb-0" id="statTotalUsers">0</h4>
-                                              </div>
-                                              <div class="avatar">
-                                                  <div class="avatar-initial bg-label-primary rounded">
-                                                      <i class="ri-user-line ri-24px"></i>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <div class="col-sm-6 col-xl-3">
-                                  <div class="card">
-                                      <div class="card-body">
-                                          <div class="d-flex align-items-center justify-content-between">
-                                              <div>
-                                                  <p class="mb-1">Aktif Kullanıcılar</p>
-                                                  <h4 class="mb-0 text-success" id="statActiveUsers">0</h4>
-                                              </div>
-                                              <div class="avatar">
-                                                  <div class="avatar-initial bg-label-success rounded">
-                                                      <i class="ri-user-follow-line ri-24px"></i>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <div class="col-sm-6 col-xl-3">
-                                  <div class="card">
-                                      <div class="card-body">
-                                          <div class="d-flex align-items-center justify-content-between">
-                                              <div>
-                                                  <p class="mb-1">Yöneticiler</p>
-                                                  <h4 class="mb-0 text-info" id="statAdminCount">0</h4>
-                                              </div>
-                                              <div class="avatar">
-                                                  <div class="avatar-initial bg-label-info rounded">
-                                                      <i class="ri-shield-star-line ri-24px"></i>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-
-                  </div>
-
-                  <!-- / Content -->
-                  <!-- Footer -->
-                  <footer class="content-footer footer bg-footer-theme">
-                      <div class="container-xxl">
-                          <div class="footer-container d-flex align-items-center justify-content-center py-4 flex-md-row flex-column">
-                              
-                                  &#169;
-                                  <script>
-                                      document.write(new Date().getFullYear());
-                                  </script>
-                                  
-                              
-
-                          </div>
-                      </div>
-                  </footer>
-                  <!-- / Footer -->
-
-                  <div class="content-backdrop fade"></div>
-              </div>
-              <!-- Content wrapper -->
-          </div>
-          <!-- / Layout page -->
-      </div>
-
-      <!-- Overlay -->
-      <div class="layout-overlay layout-menu-toggle"></div>
-      </div>
-      <!-- / Layout wrapper -->
-
-     
-
-      <!-- Core JS -->
-
-      <script src=" /assets/vendor/libs/jquery/jquery.js"></script>
-
-      <script src="/assets/vendor/libs/popper/popper.js"></script>
-      <script src="/assets/vendor/js/bootstrap.js"></script>
-      <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
-
-      <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-
-      <script src="/assets/vendor/js/menu.js"></script>
-
-      <!-- endbuild -->
-      <!-- Vendors JS -->
-      <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
-
-      <!-- Main JS -->
-
-      <script src="/assets/js/main.js"></script>
-
-      <!-- Page JS -->
-      <script src="/assets/js/dashboards-analytics.js"></script>
-
-      <!-- Place this tag before closing body tag for github widget button. -->
-      
-
-      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-      <script src="assets/js/api-service.js"></script>
-
-      <script>
-          let allUsers = [];
-          let searchTerm = "";
-          let searchTimeout;
-
-
-          // 1. Session and Token control
-          const checkAuth = () => {
-              const token = localStorage.getItem('accessToken');
-              if (!token) {
-                  console.warn("Yetkisiz erişim: Login sayfasına yönlendiriliyor...");
-                  window.location.href = 'login.html';
-                  return null;
-              }
-              return token;
-          };
-
-          // 2. Updating dashboard statistics
-          const updateDashboardStats = (users) => {
-              const stats = {
-                  total: users.length,
-                  active: users.filter(u => u.isActive || u.IsActive).length,
-                  admins: users.filter(u => u.roles?.includes('Admin')).length
-              };
-
-              const elements = {
-                  total: document.getElementById('statTotalUsers'),
-                  active: document.getElementById('statActiveUsers'),
-                  admins: document.getElementById('statAdminCount')
-              };
-
-              if (elements.total) elements.total.innerText = stats.total;
-              if (elements.active) elements.active.innerText = stats.active;
-              if (elements.admins) elements.admins.innerText = stats.admins;
-          };
-
-          // 3. Rendering user table
-          const renderUserTable = (users) => {
-              const tableBody = document.getElementById('userTableBody');
-              if (!tableBody) return;
-
-              if (users.length === 0) {
-                  tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Sistemde kullanıcı bulunamadı.</td></tr>';
-                  return;
-              }
-
-              tableBody.innerHTML = users.map(user => {
-                  const userId = user.id || user.Id;
-                  const isActive = user.isActive || user.IsActive;
-                  const username = user.username || user.Username || 'İsimsiz';
-                  const roles = user.roles?.length > 0 ? user.roles.join(', ') : 'Rol Atanmamış';
-
-                  return `
-            <tr>
-                <td>
-                    <i class="ri-user-line ri-22px text-primary me-2"></i>
-                    <strong>${username}</strong>
-                </td>
-                <td>${user.email || '-'}</td>
-                <td><span class="badge bg-label-primary">${roles}</span></td>
-                <td>
-                    <span class="badge ${isActive ? 'bg-label-success' : 'bg-label-secondary'}">
-                        ${isActive ? 'Active' : 'Suspended'}
-                    </span>
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary me-2" onclick="openEditModal(${userId})">
-                        <i class="ri-edit-box-line"></i> Düzenle
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${userId})">
-                        <i class="ri-delete-bin-line"></i> Sil
-                    </button>
-                </td>
-            </tr>`;
-              }).join('');
-          };
-
-          // 5. Searching
-          async function handleSearch(event) {
-              searchTerm = event.target.value;
-              currentPage = 1; // Arama yapılınca her zaman 1. sayfaya dönmeliyiz
-              await fetchUsers(1);
-          }
-
-          // Initialization
-          document.addEventListener('DOMContentLoaded', async () => {
-              fetchUsers(1);
-              if (!checkAuth()) return;
-
-              // Navbar info
-              const nameEl = document.getElementById('navUserName');
-              const roleEl = document.getElementById('navUserRole');
-              if (nameEl) nameEl.innerText = localStorage.getItem('username') || 'User';
-              if (roleEl) roleEl.innerText = localStorage.getItem('userRole') || 'Guest';
-
-              try {
-                  const response = await api.get('/users', {
-                      params: {
-                          pageNumber: 1, 
-                          pageSize: 5
-                      }
-                  });
-
-                  document.getElementById('userSearchInput').addEventListener('input', (e) => {
-                      clearTimeout(searchTimeout);
-
-                      searchTerm = e.target.value;
-
-                      searchTimeout = setTimeout(() => {
-                          console.log("Arama yapılıyor:", searchTerm);
-                          fetchUsers(1); 
-                      }, 500);
-                  });
-
-                  allUsers = response.data.items;
-                  const totalCount = response.data.totalCount;
-
-                  updateDashboardStats(allUsers);
-                  renderUserTable(allUsers);
-
-              } catch (error) {
-                  handleApiError(error);
-              }
-          });
-
-          
-          //API Functions (CRUD)
-          async function deleteUser(id) {
-              if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
-
-              try {
-                  await api.delete(`/users/${id}`);
-                  alert("Kullanıcı başarıyla silindi.");
-                  location.reload();
-              } catch (error) {
-                  console.error("Silme hatası:", error);
-                  alert("Silme işlemi başarısız oldu.");
-              }
-          }
-
-          async function saveUser() {
-              const userData = {
-                  Username: document.getElementById('newUserName').value,
-                  Email: document.getElementById('newUserEmail').value,
-                  Password: document.getElementById('newUserPassword').value,
-                  RoleIds: [parseInt(document.getElementById('newUserRole').value)]
-              };
-
-              if (!userData.Username || !userData.Password) {
-                  alert("Lütfen gerekli alanları doldurun!");
-                  return;
-              }
-
-              try {
-                  await api.post('/users/create', userData);
-                  alert("Kullanıcı başarıyla eklendi!");
-                  location.reload();
-              } catch (error) {
-                  alert("Ekleme yapılırken bir hata oluştu.");
-              }
-          }
-
-          function openEditModal(userId) {
-              const user = allUsers.find(u => (u.id || u.Id) === userId);
-              if (!user) return;
-
-              document.getElementById('editUserId').value = user.id || user.Id;
-              document.getElementById('editUserName').value = user.username || user.Username;
-              document.getElementById('editUserEmail').value = user.email || user.Email;
-              document.getElementById('editIsActive').checked = user.isActive || user.IsActive;
-
-              const roleSelect = document.getElementById('editUserRole');
-              roleSelect.value = user.roles?.includes('Admin') ? "1" : "2";
-
-              const modalElement = document.getElementById('editUserModal');
-              bootstrap.Modal.getOrCreateInstance(modalElement).show();
-          }
-
-          async function updateUser() {
-              const id = document.getElementById('editUserId').value;
-              const data = {
-                  Id: parseInt(id),
-                  Username: document.getElementById('editUserName').value,
-                  Email: document.getElementById('editUserEmail').value,
-                  IsActive: document.getElementById('editIsActive').checked,
-                  RoleIds: [parseInt(document.getElementById('editUserRole').value)]
-              };
-
-              try {
-                  await api.put(`/users/${id}`, data);
-                  alert("Başarıyla güncellendi!");
-                  location.reload();
-              } catch (error) {
-                  console.error("Güncelleme hatası:", error);
-              }
-          }
-
-          function logout() {
-              if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-                  localStorage.clear();
-                  window.location.href = 'login.html';
-              }
-          }
-
-          //page numbers
-          function renderPagination(data) {
-              const paginationList = document.getElementById('paginationList');
-              if (!paginationList) return;
-
-              paginationList.innerHTML = ""; 
-
-              
-              for (let i = 1; i <= data.totalPages; i++) {
-                  const isActive = i === data.pageNumber ? 'active' : '';
-
-                  const li = `
-            <li class="page-item ${isActive}">
-                <a class="page-link" href="javascript:void(0);" onclick="fetchUsers(${i})">
-                    ${i}
-                </a>
-            </li>`;
-
-                  paginationList.innerHTML += li;
-              }
-          }
-
-          // fetching data
-          async function fetchUsers(page = 1) {
-              try {
-                  const response = await api.get('/users', {
-                      params: {
-                          pageNumber: page,
-                          pageSize: 5,
-                          searchTerm: searchTerm
-                      }
-                  });
-
-                  const pagedData = response.data; 
-                  allUsers = pagedData.items;     
-
-                  renderUserTable(allUsers);
-
-                  renderPagination(pagedData);
-
-              } catch (error) {
-                  console.error("Sayfa yükleme hatası:", error);
-              }
-          }
-
-          //Handle exception
-          function handleApiError(error) {
-              console.error("API Hatası:", error);
-              if (error.response?.status === 401) {
-                  alert("Oturum süreniz dolmuş.");
-                  window.location.href = 'login.html';
-              } else {
-                  alert("Sunucuya bağlanılamadı. API'nin çalıştığından emin olun.");
-              }
-          }
-      </script>
-
-  </body>
+<body>
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="index.html" class="app-brand-link">
+                        <span class="app-brand-text demo menu-text fw-semibold ms-2">HubAdmin</span>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+
+                <ul class="menu-inner py-1">
+                    <li class="menu-item active" id="menu-dashboard">
+                        <a href="index.html" class="menu-link">
+                            <i class="menu-icon tf-icons ri-home-smile-line"></i>
+                            <div>Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="menu-item" id="menu-users">
+                        <a href="users.html" class="menu-link">
+                            <i class="menu-icon tf-icons ri-user-settings-line"></i>
+                            <div>Kullanıcı Yönetimi</div>
+                        </a>
+                    </li>
+                    <li class="menu-item" id="menu-roles">
+                        <a href="roles.html" class="menu-link">
+                            <i class="menu-icon tf-icons ri-shield-keyhole-line"></i>
+                            <div>Rol ve Yetkiler</div>
+                        </a>
+                    </li>
+                    <li class="menu-header mt-4"><span class="menu-header-text">Sistem</span></li>
+                    <li class="menu-item">
+                        <a href="settings.html" class="menu-link">
+                            <i class="menu-icon tf-icons ri-settings-4-line"></i>
+                            <div>Genel Ayarlar</div>
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+
+            <div class="layout-page">
+                <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                            <i class="icon-base ri ri-menu-line icon-md"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                        <ul class="navbar-nav flex-row align-items-center ms-md-auto">
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <img src="../assets/img/avatars/1.png" alt="User Avatar" class="rounded-circle" />
+                                    </div>
+                                </a>
+
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <div class="avatar avatar-online">
+                                                        <img src="../assets/img/avatars/1.png" alt="User Avatar" class="w-px-40 h-auto rounded-circle" />
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-0" id="navUserName">Yükleniyor...</h6>
+                                                    <small class="text-body-secondary" id="navUserRole">Kullanıcı</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li><div class="dropdown-divider my-1"></div></li>
+                                    <li>
+                                        <a class="dropdown-item" href="profile.html">
+                                            <i class="icon-base ri ri-user-line icon-md me-3"></i>
+                                            <span>My Profile</span>
+                                        </a>
+                                    </li>
+                                    <li><div class="dropdown-divider my-1"></div></li>
+                                    <li>
+                                        <div class="d-grid px-4 pt-2 pb-1">
+                                            <a class="btn btn-danger d-flex" href="javascript:void(0);" onclick="logout()">
+                                                <small class="align-middle">Logout</small>
+                                                <i class="ri ri-logout-box-r-line ms-2 ri-xs"></i>
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item me-2">
+                                <a class="nav-link" href="javascript:void(0);" onclick="toggleTheme()">
+                                    <i id="themeIcon" class="ri-moon-line icon-md"></i>
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </nav>
+                <div class="content-wrapper">
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <i class="ri-user-add-line me-1"></i> Yeni Kullanıcı Ekle
+                        </button>
+
+                        <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Yeni Kullanıcı Kaydı</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addUserForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Kullanıcı Adı</label>
+                                                <input type="text" id="newUserName" class="form-control" placeholder="yaren_dev" required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">E-posta</label>
+                                                <input type="email" id="newUserEmail" class="form-control" placeholder="yaren@example.com" required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Şifre</label>
+                                                <input type="password" id="newUserPassword" class="form-control" placeholder="...." required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Yetki</label>
+                                                <select id="newUserRole" class="form-select">
+                                                    <option value="1">Yönetici (Admin)</option>
+                                                    <option value="2" selected>Standart Kullanıcı (User)</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="button" class="btn btn-primary" onclick="saveUser()">Kaydet</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Kullanıcı Düzenle</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" id="editUserId">
+                                        <div class="mb-3">
+                                            <label class="form-label">Kullanıcı Adı</label>
+                                            <input type="text" id="editUserName" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">E-posta</label>
+                                            <input type="email" id="editUserEmail" class="form-control">
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="editIsActive">
+                                            <label class="form-check-label" for="editIsActive">Kullanıcı Aktif</label>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Kullanıcı Rolü</label>
+                                            <select id="editUserRole" class="form-select">
+                                                <option value="1">Admin</option>
+                                                <option value="2">User</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="button" class="btn btn-primary" onclick="updateUser()">Güncelle</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- SEARCH -->
+                        <div class="row mb-3 g-3">
+                            <div class="col-md-4">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ri-search-line"></i></span>
+                                    <input type="text" id="userSearchInput" class="form-control" placeholder="Ara...">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <select id="filterStatus" class="form-select" onchange="applyFilters()">
+                                    <option value="">Tüm Durumlar</option>
+                                    <option value="true">Aktif</option>
+                                    <option value="false">Pasif</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <select id="filterRole" class="form-select" onchange="applyFilters()">
+                                    <option value="">Tüm Roller</option>
+                                    <option value="1">Yönetici (Admin)</option>
+                                    <option value="2">Kullanıcı (User)</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <!-- TABLE -->
+                        <div class="col-12">
+                            <div class="card overflow-hidden">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-truncate">User</th>
+                                                <th class="text-truncate">Email</th>
+                                                <th class="text-truncate">Role</th>
+                                                <th class="text-truncate">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="userTableBody"></tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center mt-4" id="paginationList"></ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <!-- DASHBOARD -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <p class="mb-1">Toplam Kullanıcı</p>
+                                                <h4 class="mb-0" id="statTotalUsers">0</h4>
+                                            </div>
+                                            <div class="avatar">
+                                                <div class="avatar-initial bg-label-primary rounded">
+                                                    <i class="ri-user-line ri-24px"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <p class="mb-1">Aktif Kullanıcılar</p>
+                                                <h4 class="mb-0 text-success" id="statActiveUsers">0</h4>
+                                            </div>
+                                            <div class="avatar">
+                                                <div class="avatar-initial bg-label-success rounded">
+                                                    <i class="ri-user-follow-line ri-24px"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <p class="mb-1">Yöneticiler</p>
+                                                <h4 class="mb-0 text-info" id="statAdminCount">0</h4>
+                                            </div>
+                                            <div class="avatar">
+                                                <div class="avatar-initial bg-label-info rounded">
+                                                    <i class="ri-shield-star-line ri-24px"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="container-xxl">
+                            <div class="footer-container d-flex align-items-center justify-content-center py-4 flex-md-row flex-column">
+                                &#169;
+                                <script>document.write(new Date().getFullYear());</script>
+                            </div>
+                        </div>
+                    </footer>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/dashboards-analytics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="assets/js/api-service.js"></script>
+    <script src="assets/js/toggle-theme.js"></script>
+    <script src="assets/js/user-management.js"></script>
+
+</body>
 </html>

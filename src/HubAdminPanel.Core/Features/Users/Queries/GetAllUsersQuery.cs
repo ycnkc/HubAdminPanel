@@ -1,7 +1,6 @@
 ﻿using HubAdminPanel.Core.Common;
 using HubAdminPanel.Core.DTOs;
 using MediatR;
-using System.Collections.Generic;
 
 namespace HubAdminPanel.Core.Features.Users.Queries
 {
@@ -13,10 +12,13 @@ namespace HubAdminPanel.Core.Features.Users.Queries
     /// This query follows the CQRS pattern to separate read operations from write operations,
     /// ensuring efficient data retrieval.
     /// </remarks>
-    public class GetAllUsersQuery : IRequest<PagedResult<UserDto>> 
+    public class GetAllUsersQuery : IRequest<PagedResult<UserDto>>
     {
-        public int PageNumber { get; set; } = 1; 
-        public int PageSize { get; set; } = 5; 
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 5;
         public string? SearchTerm { get; set; }
+
+        public bool? IsActive { get; set; }
+        public int? RoleId { get; set; }
     }
 }

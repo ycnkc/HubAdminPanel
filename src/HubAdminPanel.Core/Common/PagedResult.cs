@@ -18,5 +18,8 @@
 
 
         public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
+
+        public int ActiveCount {  get; set; }
+        public int AdminCount { get; set; }
     }
 }

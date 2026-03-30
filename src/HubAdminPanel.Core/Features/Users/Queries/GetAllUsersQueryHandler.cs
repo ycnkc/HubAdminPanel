@@ -1,6 +1,6 @@
-﻿using HubAdminPanel.Core.Common; // PagedResult burada olmalı
+﻿using HubAdminPanel.Core.Common; 
 using HubAdminPanel.Core.DTOs;
-using Mapster; // Adapt kullanıyorsan
+using Mapster; 
 using MediatR;
 using HubAdminPanel.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +30,16 @@ namespace HubAdminPanel.Core.Features.Users.Queries
                                          u.Email.ToLower().Contains(term));
             }
 
+            if (request.IsActive.HasValue)
+            {
+                query = query.Where(u => u.IsActive == request.IsActive.Value);
+            }
+
+            if (request.RoleId.HasValue)
+            {
+                query = query.Where(u => u.UserRoles.Any(ur => ur.RoleId == request.RoleId.Value));
+            }
+
             var totalCount = await query.CountAsync(cancellationToken);
 
             var items = await query
@@ -49,12 +59,17 @@ namespace HubAdminPanel.Core.Features.Users.Queries
                          .ToList()
             }).ToList();
 
+            var activeCount = await _context.Users.CountAsync(u => u.IsActive, cancellationToken);
+            var adminCount = await _context.Users.CountAsync(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"), cancellationToken);
+
             return new PagedResult<UserDto>
             {
                 Items = dtos,
                 TotalCount = totalCount,
                 PageNumber = request.PageNumber,
-                PageSize = request.PageSize
+                PageSize = request.PageSize,
+                ActiveCount = activeCount, 
+                AdminCount = adminCount
             };
         }
     }
