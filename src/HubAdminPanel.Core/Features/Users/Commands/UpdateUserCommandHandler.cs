@@ -30,6 +30,14 @@ namespace HubAdminPanel.Core.Features.Users.Commands
         /// <returns>True if the database update was successful (at least one row affected); otherwise, false.</returns>
         public async Task<bool> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
+            var isDuplicate = await _context.Users
+                .AnyAsync(u => u.Email == request.Email && u.Id != request.Id, cancellationToken);
+
+            if (isDuplicate)
+            {
+                throw new Exception("Hata: Bu e-posta adresi zaten başka bir kullanıcı tarafından kullanılıyor.");
+            }
+
             // Retrieve user along with existing roles to ensure we have the full object graph for updating
             var user = await _context.Users.Include(u => u.UserRoles)
                 .FirstOrDefaultAsync(u => u.Id == request.Id);

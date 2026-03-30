@@ -94,7 +94,8 @@ window.applyFilters = function () {
 // Initialization
 document.addEventListener('DOMContentLoaded', async () => {
     if (!checkAuth()) return;
-
+    await fetchRoles();
+    await fetchPermissions();
     const nameEl = document.getElementById('navUserName');
     const roleEl = document.getElementById('navUserRole');
     if (nameEl) nameEl.innerText = localStorage.getItem('username') || 'User';
@@ -193,7 +194,15 @@ function openEditModal(userId) {
     document.getElementById('editIsActive').checked = user.isActive || user.IsActive;
 
     const roleSelect = document.getElementById('editUserRole');
-    roleSelect.value = user.roles?.includes('Admin') ? "1" : "2";
+    if (roleSelect) {
+        const rId = user.roleId || user.RoleId;
+        console.log("Düzenlenen Kullanıcı Rol ID:", rId);
+        console.log("Select İçindeki Mevcut Opsiyonlar:", roleSelect.innerHTML);
+
+        if (rId) {
+            roleSelect.value = rId.toString();
+        } 
+    }
 
     const modalElement = document.getElementById('editUserModal');
     bootstrap.Modal.getOrCreateInstance(modalElement).show();
@@ -236,10 +245,32 @@ async function updateUser() {
 }
 
 function logout() {
-    if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-        localStorage.clear();
-        window.location.href = 'login.html';
-    }
+    Swal.fire({
+        title: 'Çıkış Yapılıyor',
+        text: "Oturumunuzu sonlandırmak istediğinize emin misiniz?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#696cff', // Temanın ana rengi
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Evet, çıkış yap',
+        cancelButtonText: 'Vazgeç'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Tokenları temizle
+            localStorage.clear();
+
+            // Başarılı mesajı göster ve yönlendir
+            Swal.fire({
+                title: 'Hoşça kal!',
+                text: 'Başarıyla çıkış yapıldı.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = 'login.html';
+            });
+        }
+    });
 }
 
 //page numbers
@@ -310,4 +341,83 @@ function handleApiError(error) {
     }
 }
 
+async function fetchRoles() {
+    try {
+        const response = await api.get('Roles'); // baseURL: .../api/ olduğu için sadece 'Roles'
+        const roles = response.data;
 
+        // Sayfadaki 3 farklı select elementini yakalıyoruz
+        const selects = {
+            add: document.getElementById('newUserRole'),
+            edit: document.getElementById('editUserRole'),
+            filter: document.getElementById('filterRole')
+        };
+
+        // Her bir select'i dolduralım
+        Object.keys(selects).forEach(key => {
+            const select = selects[key];
+            if (!select) return;
+
+            // İçini temizle
+            select.innerHTML = '';
+
+            // Eğer filtreleme kutusuysa en başa "Tüm Roller" ekleyelim
+            if (key === 'filter') {
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = "";
+                defaultOpt.textContent = "Tüm Roller";
+                select.appendChild(defaultOpt);
+            }
+
+            // Backend'den gelen her rolü ekle
+            roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role.id || role.Id; // Backend'den gelen 'id'
+                option.textContent = role.name || role.Name; // Backend'den gelen 'name'
+                select.appendChild(option);
+            });
+        });
+
+        console.log("Roller dinamik olarak yüklendi!");
+    } catch (error) {
+        console.error("Roller yüklenirken bir hata oluştu:", error);
+    }
+}
+
+async function fetchPermissions() {
+    const container = document.getElementById('permissionsChecklist');
+    try {
+        const response = await api.get('Permissions'); // Backend'de GetPermissions endpoint'i olmalı
+        const permissions = response.data;
+
+        container.innerHTML = permissions.map(p => `
+            <div class="form-check mb-2">
+                <input class="form-check-input perm-checkbox" type="checkbox" value="${p.id}" id="perm_${p.id}">
+                <label class="form-check-label" for="perm_${p.id}">
+                    ${p.name} <small class="text-muted">(${p.description || ''})</small>
+                </label>
+            </div>
+        `).join('');
+    } catch (e) {
+        container.innerHTML = '<span class="text-danger">Yetkiler yüklenemedi.</span>';
+    }
+}
+
+async function fetchPermissions() {
+    const container = document.getElementById('permissionsChecklist');
+    try {
+        const response = await api.get('Permissions'); // Backend'de GetPermissions endpoint'i olmalı
+        const permissions = response.data;
+
+        container.innerHTML = permissions.map(p => `
+    <div class="form-check mb-2">
+        <input class="form-check-input perm-checkbox" type="checkbox" value="${p.id}" id="perm_${p.id}">
+        <label class="form-check-label" for="perm_${p.id}">
+            <strong>${p.key}</strong> - <small class="text-muted">${p.description}</small>
+        </label>
+    </div>
+`).join('');
+    } catch (e) {
+        container.innerHTML = '<span class="text-danger">Yetkiler yüklenemedi.</span>';
+    }
+}

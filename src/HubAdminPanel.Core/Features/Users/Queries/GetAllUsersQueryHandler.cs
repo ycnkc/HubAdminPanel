@@ -54,9 +54,8 @@ namespace HubAdminPanel.Core.Features.Users.Queries
                 Username = u.Username,
                 Email = u.Email,
                 IsActive = u.IsActive,
-                Roles = u.UserRoles
-                         .Select(ur => ur.Role.Name)
-                         .ToList()
+                RoleId = u.UserRoles.Select(ur => ur.RoleId).FirstOrDefault(),
+                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList()
             }).ToList();
 
             var activeCount = await _context.Users.CountAsync(u => u.IsActive, cancellationToken);

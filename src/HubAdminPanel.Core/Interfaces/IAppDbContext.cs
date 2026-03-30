@@ -8,6 +8,8 @@ namespace HubAdminPanel.Core.Interfaces
         DbSet<User> Users { get; set; }
         DbSet<Role> Roles { get; set; }
         DbSet<UserRole> UserRoles { get; set; }
+        DbSet<RolePermission> RolePermissions { get; }
+        DbSet<Permission> Permissions { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

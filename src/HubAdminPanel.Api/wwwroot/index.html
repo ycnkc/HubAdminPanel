@@ -162,8 +162,6 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Yetki</label>
                                                 <select id="newUserRole" class="form-select">
-                                                    <option value="1">Yönetici (Admin)</option>
-                                                    <option value="2" selected>Standart Kullanıcı (User)</option>
                                                 </select>
                                             </div>
                                         </form>
@@ -173,8 +171,44 @@
                                         <button type="button" class="btn btn-primary" onclick="saveUser()">Kaydet</button>
                                     </div>
                                 </div>
+
+                            </div>
+
+                        </div>
+                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                            <i class="fas fa-plus"></i> Yeni Rol Oluştur
+                        </button>
+
+
+                        <div class="modal fade" id="addRoleModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Yeni Rol Ekle</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Rol Adı</label>
+                                            <input type="text" id="newRoleName" class="form-control" placeholder="Örn: Editor">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Yetkiler</label>
+                                            <div id="permissionsChecklist" class="border p-3 rounded" style="max-height: 200px; overflow-y: auto; background: #f8f9fa;">
+                                                <div class="text-muted">Yetkiler yükleniyor...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="button" class="btn btn-success" onclick="createNewRole()">Kaydet</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+
 
                         <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -200,8 +234,6 @@
                                         <div class="mb-3">
                                             <label class="form-label">Kullanıcı Rolü</label>
                                             <select id="editUserRole" class="form-select">
-                                                <option value="1">Admin</option>
-                                                <option value="2">User</option>
                                             </select>
                                         </div>
                                     </div>
@@ -227,15 +259,14 @@
                                 <select id="filterStatus" class="form-select" onchange="applyFilters()">
                                     <option value="">Tüm Durumlar</option>
                                     <option value="true">Aktif</option>
-                                    <option value="false">Pasif</option>
+                                    <option value="false">Suspended</option>
                                 </select>
                             </div>
 
                             <div class="col-md-3">
                                 <select id="filterRole" class="form-select" onchange="applyFilters()">
                                     <option value="">Tüm Roller</option>
-                                    <option value="1">Yönetici (Admin)</option>
-                                    <option value="2">Kullanıcı (User)</option>
+
                                 </select>
                             </div>
                         </div>
