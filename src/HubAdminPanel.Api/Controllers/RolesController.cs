@@ -1,4 +1,4 @@
-﻿using HubAdminPanel.Core.Features.Users.Commands;
+﻿using HubAdminPanel.Core.Features.Roles.Commands;
 using HubAdminPanel.Core.Features.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +8,7 @@ namespace HubAdminPanel.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] 
+    [Authorize]
     public class RolesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -16,7 +16,7 @@ namespace HubAdminPanel.Api.Controllers
         public RolesController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet]
-        [Authorize(Policy = "UserView")] 
+        [Authorize(Policy = "UserView")]
         public async Task<IActionResult> GetRoles()
         {
             var roles = await _mediator.Send(new GetAllRolesQuery());
@@ -24,7 +24,7 @@ namespace HubAdminPanel.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "RoleManage")] 
+        [Authorize(Policy = "RoleManage")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleCommand command)
         {
             var roleId = await _mediator.Send(command);

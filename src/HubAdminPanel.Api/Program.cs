@@ -1,5 +1,6 @@
 using HubAdminPanel.Api.Services;
 using HubAdminPanel.Core.Features.Auth.Commands;
+using HubAdminPanel.Core.Features.Roles.Commands;
 using HubAdminPanel.Core.Interfaces;
 using HubAdminPanel.Data;
 using Mapster;
@@ -33,7 +34,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetService<AppDbContext>());
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssemblies(
+        typeof(RegisterUserCommand).Assembly,
+        typeof(CreateRoleCommand).Assembly
+    );
+});
+
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 

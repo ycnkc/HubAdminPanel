@@ -34,9 +34,13 @@ namespace HubAdminPanel.Data
 
             // Data Seeding -- Pre-populates the Roles table.
             modelBuilder.Entity<Role>().HasData(
-                new Role { Id = 1, Name = "Admin"},
-                new Role { Id = 2, Name = "User"}
+                new Role { Id = 1, Name = "Admin" },
+                new Role { Id = 2, Name = "User" }
                 );
+
+            modelBuilder.Entity<RolePermission>()
+                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });

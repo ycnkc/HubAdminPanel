@@ -462,8 +462,8 @@ async function createNewRole() {
     }
 
     const command = {
-        Name: roleName,
-        PermissionIds: selectedPermissions
+        name: roleName,
+        permissionIds: selectedPermissions
     };
 
     try {
@@ -483,14 +483,13 @@ async function createNewRole() {
 function checkUIByPermissions() {
     const userPermissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
 
-    // Admin ise her şeyi görsün
     const userRole = localStorage.getItem('userRole');
     if (userRole === 'Admin') return;
 
     document.querySelectorAll('.btn-perm').forEach(el => {
         const required = el.getAttribute('data-permission');
         if (!userPermissions.includes(required)) {
-            el.style.display = 'none'; // Yetki yoksa butonu gizle
+            el.style.display = 'none'; 
         }
     });
 }
