@@ -6,10 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HubAdminPanel.Core.Features.Users.Queries
+namespace HubAdminPanel.Core.Features.Roles.Queries
 {
-    public class GetAllRolesQuery : IRequest<List<RoleDto>>
-    {
-
-    }
+    public record GetRoleByIdQuery(int Id) : IRequest<RoleDto>;
 }

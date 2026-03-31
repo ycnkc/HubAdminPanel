@@ -3,7 +3,7 @@ using HubAdminPanel.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HubAdminPanel.Core.Features.Users.Queries
+namespace HubAdminPanel.Core.Features.Roles.Queries
 {
     public class GetAllRolesQueryHandler : IRequestHandler<GetAllRolesQuery, List<RoleDto>>
     {
@@ -14,7 +14,16 @@ namespace HubAdminPanel.Core.Features.Users.Queries
         {
 
             return await _context.Roles
-                .Select(r => new RoleDto { Id = r.Id, Name = r.Name })
+                .Select(r => new RoleDto 
+                {
+                    Id = r.Id, 
+                    Name = r.Name,
+                    Permissions = r.RolePermissions.Select(rp => new DTOs.PermissionDto
+                    {
+                        Id = rp.PermissionId,
+                        Name = rp.Permission.Key
+                    }).ToList()
+                })
                 .ToListAsync(cancellationToken);
         }
     }

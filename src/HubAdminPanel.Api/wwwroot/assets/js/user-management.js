@@ -4,79 +4,6 @@ let searchTimeout;
 let currentPage = 1;
 
 
-// 1. Session and Token control
-const checkAuth = () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-        console.warn("Yetkisiz erişim: Login sayfasına yönlendiriliyor...");
-        window.location.href = 'login.html';
-        return null;
-    }
-    return token;
-};
-
-// 2. Updating dashboard statistics
-let statusChart, roleChart; 
-function updateDashboardStats(pagedData) {
-    const total = pagedData.totalCount || 0;
-    const active = pagedData.activeCount || 0;
-    const admin = pagedData.adminCount || 0;
-    const suspended = total - active;
-
-    if (document.getElementById('statTotalUsers')) document.getElementById('statTotalUsers').innerText = total;
-    if (document.getElementById('statActiveUsers')) document.getElementById('statActiveUsers').innerText = active;
-    if (document.getElementById('statAdminCount')) document.getElementById('statAdminCount').innerText = admin;
-
-    const ctxStatus = document.getElementById('statusChart').getContext('2d');
-    if (statusChart) statusChart.destroy();
-    statusChart = new Chart(ctxStatus, {
-        type: 'doughnut',
-        data: {
-            labels: ['Aktif', 'Suspended'],
-            datasets: [{
-                data: [active, suspended], 
-                backgroundColor: ['#72e128', '#8592a3'],
-                hoverOffset: 4
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-    });
-
-    const roleCounts = {};
-    pagedData.items.forEach(u => {
-        const roleName = u.roles[0] || 'Atanmamış';
-        roleCounts[roleName] = (roleCounts[roleName] || 0) + 1;
-    });
-
-    const roleData = pagedData.roleCounts || {};
-
-    const ctxRole = document.getElementById('roleChart').getContext('2d');
-    if (roleChart) roleChart.destroy();
-
-    roleChart = new Chart(ctxRole, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(roleData), 
-            datasets: [{
-                label: 'Sistemdeki Toplam Kullanıcı',
-                data: Object.values(roleData), 
-                backgroundColor: '#666cff',
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
-    });
-}
-
 // 3. Rendering user table
 const renderUserTable = (users) => {
     const tableBody = document.getElementById('userTableBody');
@@ -234,6 +161,7 @@ async function saveUser() {
     }
 }
 
+//editing
 function openEditModal(userId) {
     const user = allUsers.find(u => (u.id || u.Id) === userId);
     if (!user) return;
@@ -294,32 +222,7 @@ async function updateUser() {
     }
 }
 
-function logout() {
-    Swal.fire({
-        title: 'Çıkış Yapılıyor',
-        text: "Oturumunuzu sonlandırmak istediğinize emin misiniz?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#696cff', 
-        cancelButtonColor: '#8592a3',
-        confirmButtonText: 'Evet, çıkış yap',
-        cancelButtonText: 'Vazgeç'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            localStorage.clear();
 
-            Swal.fire({
-                title: 'Hoşça kal!',
-                text: 'Başarıyla çıkış yapıldı.',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                window.location.href = 'login.html';
-            });
-        }
-    });
-}
 
 //page numbers
 function renderPagination(data) {
@@ -391,105 +294,4 @@ function handleApiError(error) {
     } else {
         alert("Sunucuya bağlanılamadı. API'nin çalıştığından emin olun.");
     }
-}
-
-async function fetchRoles() {
-    try {
-        const response = await api.get('Roles'); 
-        const roles = response.data;
-
-        const selects = {
-            add: document.getElementById('newUserRole'),
-            edit: document.getElementById('editUserRole'),
-            filter: document.getElementById('filterRole')
-        };
-
-        Object.keys(selects).forEach(key => {
-            const select = selects[key];
-            if (!select) return;
-
-            select.innerHTML = '';
-
-            if (key === 'filter') {
-                const defaultOpt = document.createElement('option');
-                defaultOpt.value = "";
-                defaultOpt.textContent = "Tüm Roller";
-                select.appendChild(defaultOpt);
-            }
-
-            roles.forEach(role => {
-                const option = document.createElement('option');
-                option.value = role.id || role.Id; 
-                option.textContent = role.name || role.Name; 
-                select.appendChild(option);
-            });
-        });
-
-        console.log("Roller dinamik olarak yüklendi!");
-    } catch (error) {
-        console.error("Roller yüklenirken bir hata oluştu:", error);
-    }
-}
-
-async function fetchPermissions() {
-    const container = document.getElementById('permissionsChecklist');
-    try {
-        const response = await api.get('Permissions'); 
-        const permissions = response.data;
-
-        container.innerHTML = permissions.map(p => `
-    <div class="form-check mb-2">
-        <input class="form-check-input perm-checkbox" type="checkbox" value="${p.id}" id="perm_${p.id}">
-        <label class="form-check-label" for="perm_${p.id}">
-            <strong>${p.key}</strong> - <small class="text-muted">${p.description}</small>
-        </label>
-    </div>
-`).join('');
-    } catch (e) {
-        container.innerHTML = '<span class="text-danger">Yetkiler yüklenemedi.</span>';
-    }
-}
-
-async function createNewRole() {
-    const roleName = document.getElementById('newRoleName').value;
-
-    const selectedPermissions = Array.from(document.querySelectorAll('.perm-checkbox:checked'))
-        .map(cb => parseInt(cb.value));
-
-    if (!roleName) {
-        Swal.fire('Hata', 'Lütfen rol adı giriniz.', 'warning');
-        return;
-    }
-
-    const command = {
-        name: roleName,
-        permissionIds: selectedPermissions
-    };
-
-    try {
-        await api.post('/Roles', command);
-
-        Swal.fire('Başarılı', 'Yeni rol ve yetkileri oluşturuldu!', 'success');
-
-        bootstrap.Modal.getInstance(document.getElementById('addRoleModal')).hide();
-        await fetchRoles(); 
-
-    } catch (error) {
-        console.error("Rol oluşturma hatası:", error);
-        Swal.fire('Hata', 'Rol oluşturulamadı.', 'error');
-    }
-}
-
-function checkUIByPermissions() {
-    const userPermissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
-
-    const userRole = localStorage.getItem('userRole');
-    if (userRole === 'Admin') return;
-
-    document.querySelectorAll('.btn-perm').forEach(el => {
-        const required = el.getAttribute('data-permission');
-        if (!userPermissions.includes(required)) {
-            el.style.display = 'none'; 
-        }
-    });
 }

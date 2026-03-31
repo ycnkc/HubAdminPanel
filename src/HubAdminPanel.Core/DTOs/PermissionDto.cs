@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace HubAdminPanel.Core.DTOs
 {
-    public class RoleDto
+    public class PermissionDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<PermissionDto> Permissions { get; set; } = new List<PermissionDto>();
     }
-
-   
 }
