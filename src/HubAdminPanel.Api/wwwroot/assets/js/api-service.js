@@ -32,14 +32,26 @@ api.interceptors.request.use(
  * Globally handles API responses and manages session expiration errors.
  */
 api.interceptors.response.use(
-    (response) => response, 
+    (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
-            
-            alert("Oturumunuz sona erdi, lütfen tekrar giriş yapın.");
-            localStorage.clear();
-            window.location.href = 'login.html';
+        if (error.response) {
+            if (error.response.status === 401) {
+                localStorage.clear();
+                alert("Oturumunuz sona erdi, lütfen tekrar giriş yapın.");
+                window.location.href = 'login.html';
+            }
+
+            else if (error.response.status === 403) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Yetkisiz İşlem!',
+                    text: 'Bu işlemi gerçekleştirmek için gerekli yetkiye sahip değilsiniz.',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Tamam'
+                });
+            }
         }
+
         return Promise.reject(error);
     }
 );

@@ -16,26 +16,66 @@ const checkAuth = () => {
 };
 
 // 2. Updating dashboard statistics
-const updateDashboardStats = (pagedData) => {
-    if (!pagedData) {
-        console.warn("Dashboard güncellenemedi: Veri henüz hazır değil.");
-        return;
-    }
+let statusChart, roleChart; 
+function updateDashboardStats(pagedData) {
+    const total = pagedData.totalCount || 0;
+    const active = pagedData.activeCount || 0;
+    const admin = pagedData.adminCount || 0;
+    const suspended = total - active;
 
-    const elements = {
-        total: document.getElementById('statTotalUsers'),
-        active: document.getElementById('statActiveUsers'),
-        admins: document.getElementById('statAdminCount')
-    };
+    if (document.getElementById('statTotalUsers')) document.getElementById('statTotalUsers').innerText = total;
+    if (document.getElementById('statActiveUsers')) document.getElementById('statActiveUsers').innerText = active;
+    if (document.getElementById('statAdminCount')) document.getElementById('statAdminCount').innerText = admin;
 
-    const total = pagedData.totalCount ?? pagedData.TotalCount ?? 0;
-    const active = pagedData.activeCount ?? pagedData.ActiveCount ?? 0;
-    const admin = pagedData.adminCount ?? pagedData.AdminCount ?? 0;
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    if (statusChart) statusChart.destroy();
+    statusChart = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+            labels: ['Aktif', 'Suspended'],
+            datasets: [{
+                data: [active, suspended], 
+                backgroundColor: ['#72e128', '#8592a3'],
+                hoverOffset: 4
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
 
-    if (elements.total) elements.total.innerText = total;
-    if (elements.active) elements.active.innerText = active;
-    if (elements.admins) elements.admins.innerText = admin;
-};
+    const roleCounts = {};
+    pagedData.items.forEach(u => {
+        const roleName = u.roles[0] || 'Atanmamış';
+        roleCounts[roleName] = (roleCounts[roleName] || 0) + 1;
+    });
+
+    const roleData = pagedData.roleCounts || {};
+
+    const ctxRole = document.getElementById('roleChart').getContext('2d');
+    if (roleChart) roleChart.destroy();
+
+    roleChart = new Chart(ctxRole, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(roleData), 
+            datasets: [{
+                label: 'Sistemdeki Toplam Kullanıcı',
+                data: Object.values(roleData), 
+                backgroundColor: '#666cff',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+}
 
 // 3. Rendering user table
 const renderUserTable = (users) => {
@@ -67,15 +107,24 @@ const renderUserTable = (users) => {
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-2" onclick="openEditModal(${userId})">
+                    <button class="btn btn-sm btn-outline-primary me-2 btn-perm" 
+                            data-permission="USER_UPDATE" 
+                            onclick="openEditModal(${userId})">
                         <i class="ri-edit-box-line"></i> Düzenle
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${userId})">
+                    
+                    <button class="btn btn-sm btn-danger btn-perm" 
+                            data-permission="USER_DELETE" 
+                            onclick="deleteUser(${userId})">
                         <i class="ri-delete-bin-line"></i> Sil
                     </button>
                 </td>
             </tr>`;
     }).join('');
+
+    if (typeof checkUIByPermissions === 'function') {
+        checkUIByPermissions();
+    }
 };
 
 // 5. Searching
@@ -96,6 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!checkAuth()) return;
     await fetchRoles();
     await fetchPermissions();
+    
     const nameEl = document.getElementById('navUserName');
     const roleEl = document.getElementById('navUserRole');
     if (nameEl) nameEl.innerText = localStorage.getItem('username') || 'User';
@@ -250,16 +300,14 @@ function logout() {
         text: "Oturumunuzu sonlandırmak istediğinize emin misiniz?",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#696cff', // Temanın ana rengi
+        confirmButtonColor: '#696cff', 
         cancelButtonColor: '#8592a3',
         confirmButtonText: 'Evet, çıkış yap',
         cancelButtonText: 'Vazgeç'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Tokenları temizle
             localStorage.clear();
 
-            // Başarılı mesajı göster ve yönlendir
             Swal.fire({
                 title: 'Hoşça kal!',
                 text: 'Başarıyla çıkış yapıldı.',
@@ -325,6 +373,10 @@ async function fetchUsers(page = 1) {
         renderPagination(pagedData);
         updateDashboardStats(pagedData);
 
+        if (typeof checkUIByPermissions === 'function') {
+            checkUIByPermissions();
+        }
+
     } catch (error) {
         console.error("Sayfa yükleme hatası:", error);
     }
@@ -343,25 +395,21 @@ function handleApiError(error) {
 
 async function fetchRoles() {
     try {
-        const response = await api.get('Roles'); // baseURL: .../api/ olduğu için sadece 'Roles'
+        const response = await api.get('Roles'); 
         const roles = response.data;
 
-        // Sayfadaki 3 farklı select elementini yakalıyoruz
         const selects = {
             add: document.getElementById('newUserRole'),
             edit: document.getElementById('editUserRole'),
             filter: document.getElementById('filterRole')
         };
 
-        // Her bir select'i dolduralım
         Object.keys(selects).forEach(key => {
             const select = selects[key];
             if (!select) return;
 
-            // İçini temizle
             select.innerHTML = '';
 
-            // Eğer filtreleme kutusuysa en başa "Tüm Roller" ekleyelim
             if (key === 'filter') {
                 const defaultOpt = document.createElement('option');
                 defaultOpt.value = "";
@@ -369,11 +417,10 @@ async function fetchRoles() {
                 select.appendChild(defaultOpt);
             }
 
-            // Backend'den gelen her rolü ekle
             roles.forEach(role => {
                 const option = document.createElement('option');
-                option.value = role.id || role.Id; // Backend'den gelen 'id'
-                option.textContent = role.name || role.Name; // Backend'den gelen 'name'
+                option.value = role.id || role.Id; 
+                option.textContent = role.name || role.Name; 
                 select.appendChild(option);
             });
         });
@@ -387,26 +434,7 @@ async function fetchRoles() {
 async function fetchPermissions() {
     const container = document.getElementById('permissionsChecklist');
     try {
-        const response = await api.get('Permissions'); // Backend'de GetPermissions endpoint'i olmalı
-        const permissions = response.data;
-
-        container.innerHTML = permissions.map(p => `
-            <div class="form-check mb-2">
-                <input class="form-check-input perm-checkbox" type="checkbox" value="${p.id}" id="perm_${p.id}">
-                <label class="form-check-label" for="perm_${p.id}">
-                    ${p.name} <small class="text-muted">(${p.description || ''})</small>
-                </label>
-            </div>
-        `).join('');
-    } catch (e) {
-        container.innerHTML = '<span class="text-danger">Yetkiler yüklenemedi.</span>';
-    }
-}
-
-async function fetchPermissions() {
-    const container = document.getElementById('permissionsChecklist');
-    try {
-        const response = await api.get('Permissions'); // Backend'de GetPermissions endpoint'i olmalı
+        const response = await api.get('Permissions'); 
         const permissions = response.data;
 
         container.innerHTML = permissions.map(p => `
@@ -420,4 +448,49 @@ async function fetchPermissions() {
     } catch (e) {
         container.innerHTML = '<span class="text-danger">Yetkiler yüklenemedi.</span>';
     }
+}
+
+async function createNewRole() {
+    const roleName = document.getElementById('newRoleName').value;
+
+    const selectedPermissions = Array.from(document.querySelectorAll('.perm-checkbox:checked'))
+        .map(cb => parseInt(cb.value));
+
+    if (!roleName) {
+        Swal.fire('Hata', 'Lütfen rol adı giriniz.', 'warning');
+        return;
+    }
+
+    const command = {
+        Name: roleName,
+        PermissionIds: selectedPermissions
+    };
+
+    try {
+        await api.post('/Roles', command);
+
+        Swal.fire('Başarılı', 'Yeni rol ve yetkileri oluşturuldu!', 'success');
+
+        bootstrap.Modal.getInstance(document.getElementById('addRoleModal')).hide();
+        await fetchRoles(); 
+
+    } catch (error) {
+        console.error("Rol oluşturma hatası:", error);
+        Swal.fire('Hata', 'Rol oluşturulamadı.', 'error');
+    }
+}
+
+function checkUIByPermissions() {
+    const userPermissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
+
+    // Admin ise her şeyi görsün
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'Admin') return;
+
+    document.querySelectorAll('.btn-perm').forEach(el => {
+        const required = el.getAttribute('data-permission');
+        if (!userPermissions.includes(required)) {
+            el.style.display = 'none'; // Yetki yoksa butonu gizle
+        }
+    });
 }

@@ -36,9 +36,11 @@ namespace HubAdminPanel.Core.Features.Auth.Commands
         public async Task<AuthResponseDto> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _context.Users
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(u => u.Username == request.Username);
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .ThenInclude(r => r.RolePermissions)
+                .ThenInclude(rp => rp.Permission)
+    .FirstOrDefaultAsync(u => u.Username == request.Username);
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 
@@ -60,6 +62,8 @@ namespace HubAdminPanel.Core.Features.Auth.Commands
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+
 
             return new AuthResponseDto
             {

@@ -89,6 +89,27 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("UserView", policy =>
+        policy.RequireClaim("Permission", "USER_VIEW"));
+
+    options.AddPolicy("UserCreate", policy =>
+        policy.RequireClaim("Permission", "USER_CREATE"));
+
+    options.AddPolicy("UserUpdate", policy =>
+        policy.RequireClaim("Permission", "USER_UPDATE"));
+
+    options.AddPolicy("UserDelete", policy =>
+        policy.RequireClaim("Permission", "USER_DELETE"));
+
+    options.AddPolicy("RoleManage", policy =>
+        policy.RequireClaim("Permission", "ROLE_MANAGE"));
+
+    options.AddPolicy("DashboardView", policy =>
+        policy.RequireClaim("Permission", "DASHBOARD_VIEW"));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -104,7 +125,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseHttpsRedirection();
 app.UseCors("AllowMataeo");
-app.UseAuthorization();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

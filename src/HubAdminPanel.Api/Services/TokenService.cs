@@ -32,15 +32,23 @@ namespace HubAdminPanel.Api.Services
         public string CreateToken(User user)
         {
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
-            };
+    {
+        new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+        new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+    };
 
             foreach (var userRole in user.UserRoles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
+
+                if (userRole.Role.RolePermissions != null)
+                {
+                    foreach (var rolePerm in userRole.Role.RolePermissions)
+                    {
+                        claims.Add(new Claim("Permission", rolePerm.Permission.Key));
+                    }
+                }
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

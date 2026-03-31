@@ -132,11 +132,21 @@
 
                     </div>
                 </nav>
+
                 <div class="content-wrapper">
                     <div class="container-xxl flex-grow-1 container-p-y">
-                        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                            <i class="ri-user-add-line me-1"></i> Yeni Kullanıcı Ekle
-                        </button>
+
+                        <div class="d-flex align-items-center gap-2 mb-4">
+
+                            <button type="button" class="btn btn-primary btn-perm" data-permission="USER_CREATE" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="ri-user-add-line me-1"></i> Yeni Kullanıcı Ekle
+                            </button>
+
+                            <button type="button" class="btn btn-success btn-perm" data-permission="ROLE_MANAGE" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                                <i class="ri-shield-user-line me-1"></i> Yeni Rol Oluştur
+                            </button>
+
+                        </div>
 
                         <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -161,8 +171,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Yetki</label>
-                                                <select id="newUserRole" class="form-select">
-                                                </select>
+                                                <select id="newUserRole" class="form-select"></select>
                                             </div>
                                         </form>
                                     </div>
@@ -171,14 +180,8 @@
                                         <button type="button" class="btn btn-primary" onclick="saveUser()">Kaydet</button>
                                     </div>
                                 </div>
-
                             </div>
-
                         </div>
-                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addRoleModal">
-                            <i class="fas fa-plus"></i> Yeni Rol Oluştur
-                        </button>
-
 
                         <div class="modal fade" id="addRoleModal" tabindex="-1">
                             <div class="modal-dialog">
@@ -199,7 +202,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
                                         <button type="button" class="btn btn-success" onclick="createNewRole()">Kaydet</button>
@@ -207,6 +209,7 @@
                                 </div>
                             </div>
                         </div>
+
 
 
 
@@ -284,6 +287,8 @@
                                                 <th class="text-truncate">Email</th>
                                                 <th class="text-truncate">Role</th>
                                                 <th class="text-truncate">Status</th>
+                                                <th class="text-center">İşlemler</th>
+                            
                                             </tr>
                                         </thead>
                                         <tbody id="userTableBody"></tbody>
@@ -351,7 +356,33 @@
                                 </div>
                             </div>
                         </div>
+                        <hr>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-header d-flex align-items-center justify-content-between">
+                                        <h5 class="card-title m-0 me-2">Kullanıcı Durumları</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="statusChart" style="max-height: 250px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-lg-8">
+                                <div class="card h-100">
+                                    <div class="card-header d-flex align-items-center justify-content-between">
+                                        <h5 class="card-title m-0 me-2">Rol Dağılımı</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="roleChart" style="max-height: 250px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
 
                     <!-- FOOTER -->
                     <footer class="content-footer footer bg-footer-theme">
@@ -369,6 +400,7 @@
     </div>
 
     <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/assets/vendor/libs/jquery/jquery.js"></script>
     <script src="/assets/vendor/libs/popper/popper.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

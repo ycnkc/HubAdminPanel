@@ -21,6 +21,8 @@ namespace HubAdminPanel.Core.Features.Users.Queries
             var query = _context.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
+                    .ThenInclude(r => r.RolePermissions)
+                        .ThenInclude(rp => rp.Permission) 
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
@@ -41,11 +43,18 @@ namespace HubAdminPanel.Core.Features.Users.Queries
             }
 
             var totalCount = await query.CountAsync(cancellationToken);
+            var activeCount = await query.CountAsync(u => u.IsActive); 
+            var adminCount = await query.CountAsync(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"));
 
             var items = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
+
+            var roleCounts = await _context.UserRoles
+                .GroupBy(ur => ur.Role.Name)
+                .Select(g => new { RoleName = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.RoleName, x => x.Count);
 
 
             var dtos = items.Select(u => new UserDto
@@ -58,9 +67,6 @@ namespace HubAdminPanel.Core.Features.Users.Queries
                 Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList()
             }).ToList();
 
-            var activeCount = await _context.Users.CountAsync(u => u.IsActive, cancellationToken);
-            var adminCount = await _context.Users.CountAsync(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"), cancellationToken);
-
             return new PagedResult<UserDto>
             {
                 Items = dtos,
@@ -68,7 +74,8 @@ namespace HubAdminPanel.Core.Features.Users.Queries
                 PageNumber = request.PageNumber,
                 PageSize = request.PageSize,
                 ActiveCount = activeCount, 
-                AdminCount = adminCount
+                AdminCount = adminCount,
+                RoleCounts = roleCounts
             };
         }
     }

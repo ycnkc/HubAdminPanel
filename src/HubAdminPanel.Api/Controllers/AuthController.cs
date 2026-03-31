@@ -82,7 +82,6 @@ namespace HubAdminPanel.Api.Controllers
         /// </summary>
         /// <returns>A success message if the session was successfully terminated.</returns>
         [Authorize]
-        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {

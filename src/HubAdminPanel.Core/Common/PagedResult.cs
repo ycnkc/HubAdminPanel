@@ -21,5 +21,6 @@
 
         public int ActiveCount {  get; set; }
         public int AdminCount { get; set; }
+        public Dictionary<string, int> RoleCounts { get; set; }
     }
 }
