@@ -14,5 +14,7 @@ namespace HubAdminPanel.Core.Entities
         public string Description { get; set; }
 
         public virtual ICollection<EndpointPermissionMapping> EndpointPermissionMappings { get; set; }
+
+        public ICollection<EndpointUser> EndpointUsers { get; set; }
     }
 }

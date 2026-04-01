@@ -27,6 +27,7 @@ namespace HubAdminPanel.Data
         public DbSet<Endpoint> Endpoints { get; set; }
         public DbSet<EndpointPermissionMapping> EndpointPermissionMappings { get; set; }
         public DbSet<UserExtraPermission> UserExtraPermissions { get; set; }
+        public DbSet<EndpointUser> EndpointUsers { get; set; }
 
         /// <summary>
         /// Configures the database schema and defines entity relationships using Fluent API.
