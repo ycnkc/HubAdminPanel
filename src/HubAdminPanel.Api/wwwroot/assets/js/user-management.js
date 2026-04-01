@@ -78,6 +78,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (nameEl) nameEl.innerText = localStorage.getItem('username') || 'User';
     if (roleEl) roleEl.innerText = localStorage.getItem('userRole') || 'Guest';
 
+
+
     const searchInput = document.getElementById('userSearchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -295,3 +297,4 @@ function handleApiError(error) {
         alert("Sunucuya bağlanılamadı. API'nin çalıştığından emin olun.");
     }
 }
+

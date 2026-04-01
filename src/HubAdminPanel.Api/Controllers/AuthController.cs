@@ -1,4 +1,6 @@
-﻿using HubAdminPanel.Core.Features.Auth.Commands;
+﻿using HubAdminPanel.Core.DTOs;
+using HubAdminPanel.Core.Features.Auth.Commands;
+using HubAdminPanel.Core.Features.Auth.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,6 +94,44 @@ namespace HubAdminPanel.Api.Controllers
             var result = await _mediator.Send(new LogoutUserCommand { UserId = int.Parse(userIdClaim) });
 
             return result ? Ok("Logout successful.") : BadRequest("Logout unsuccessful.");
+        }
+
+        [Authorize] 
+        [HttpPost("generate")]
+        public async Task<IActionResult> GenerateToken([FromBody] TokenRequestDto request)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+            var command = new GenerateTokenCommand
+            {
+                Name = request.Name,
+                ExpireDays = request.ExpireDays,
+                UserId = int.Parse(userIdClaim)
+            };
+
+            try
+            {
+                var result = await _mediator.Send(command);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Forbid(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("tokens")]
+        public async Task<IActionResult> GetTokens()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+            
+            var result = await _mediator.Send(new GetTokensQuery { UserId = int.Parse(userIdClaim) });
+
+            return Ok(result);
         }
     }
 }

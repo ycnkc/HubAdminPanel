@@ -1,3 +1,4 @@
+using HubAdminPanel.Api.Middleware;
 using HubAdminPanel.Api.Services;
 using HubAdminPanel.Core.Features.Auth.Commands;
 using HubAdminPanel.Core.Features.Roles.Commands;
@@ -28,6 +29,8 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
+
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -64,6 +67,13 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -96,27 +106,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("UserView", policy =>
-        policy.RequireClaim("Permission", "USER_VIEW"));
-
-    options.AddPolicy("UserCreate", policy =>
-        policy.RequireClaim("Permission", "USER_CREATE"));
-
-    options.AddPolicy("UserUpdate", policy =>
-        policy.RequireClaim("Permission", "USER_UPDATE"));
-
-    options.AddPolicy("UserDelete", policy =>
-        policy.RequireClaim("Permission", "USER_DELETE"));
-
-    options.AddPolicy("RoleManage", policy =>
-        policy.RequireClaim("Permission", "ROLE_MANAGE"));
-
-    options.AddPolicy("DashboardView", policy =>
-        policy.RequireClaim("Permission", "DASHBOARD_VIEW"));
-});
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -133,6 +122,7 @@ app.UseRouting();
 app.UseHttpsRedirection();
 app.UseCors("AllowMataeo");
 app.UseAuthentication();
+app.UseMiddleware<DynamicAuthorizationMiddleware>(); app.UseMiddleware<DynamicAuthorizationMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 

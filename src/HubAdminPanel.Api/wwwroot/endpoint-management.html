@@ -201,104 +201,81 @@
                         <!-- / Navbar -->
                         <!-- Content wrapper -->
                         <div class="content-wrapper">
-                            <!-- Content -->
                             <div class="container-xxl flex-grow-1 container-p-y">
-                                <h4 class="fw-bold py-3 mb-4">Rol ve Yetki Yönetimi</h4>
+                                <h4 class="fw-bold py-3 mb-4">
+                                     Endpoint Management
+                                </h4>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div>
+                                                        <h5 class="card-title mb-1">Endpoint Erişim Kontrol Merkezi</h5>
+                                                        <p class="text-muted mb-0">API uç noktalarına atanmış yetkileri dinamik olarak yönetin ve güvenlik duvarınızı güncelleyin.</p>
+                                                    </div>
+                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEndpointModal">
+                                                        <i class="mdi mdi-api me-1"></i> Yeni Endpoint Tanımla
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="card">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0">Mevcut Roller</h5>
-                                        <button class="btn btn-primary" onclick="openAddRoleModal()">
-                                            <i class="mdi mdi-plus me-1"></i>Yeni Rol Ekle
-                                        </button>
-                                    </div>
+                                    <h5 class="card-header">Aktif Endpointler</h5>
                                     <div class="table-responsive text-nowrap">
                                         <table class="table table-hover">
-                                            <thead>
+                                            <thead class="table-light">
                                                 <tr>
-                                                    <th>Rol İsmi</th>
-                                                    <th>Yetkiler</th>
-                                                    <th>Durum</th>
+                                                    <th>Metot</th>
+                                                    <th>Rota (Path)</th>
+                                                    <th>Açıklama</th>
+                                                    <th>Atanmış Yetkiler</th>
                                                     <th>İşlemler</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="table-border-bottom-0" id="roleTableBody">
+                                            <tbody id="endpointTableBody" class="table-border-bottom-0">
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="modal fade" id="roleModal" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal fade" id="assignPermissionModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="modalTitle">Rol Ayarları</h5>
+                                            <h5 class="modal-title">Endpoint'e Yetki Ata</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <input type="hidden" id="roleIdInput">
+                                            <input type="hidden" id="selectedEndpointId" />
                                             <div class="row">
-                                                <div class="col mb-4">
-                                                    <label for="roleNameInput" class="form-label">Rol Adı</label>
-                                                    <input type="text" id="roleNameInput" class="form-control" placeholder="Örn: Editor" />
+                                                <div class="col mb-3">
+                                                    <label class="form-label">Seçili Endpoint</label>
+                                                    <input type="text" id="endpointPathDisplay" class="form-control" readonly />
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col mb-0">
-                                                    <label class="form-label">Yetki Tanımları</label>
-                                                    <div id="permissionList" class="p-2 border rounded" style="max-height: 200px; overflow-y: auto;">
-                                                    </div>
+                                                    <label for="permissionSelect" class="form-label">Atanacak Yetki</label>
+                                                    <select class="form-select" id="permissionSelect">
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                                            <button type="button" class="btn btn-primary" onclick="saveRolePermissions()">Değişiklikleri Kaydet</button>
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                                            <button type="button" class="btn btn-primary" onclick="savePermissionAssignment()">Yetkiyi Bağla</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-
-                            <!-- / Content -->
-                            <!-- Footer -->
-                            <footer class="content-footer footer bg-footer-theme">
-                                <div class="container-xxl">
-                                    <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
-                                        <div class="mb-2 mb-md-0">
-                                            &#169;
-                                            <script>
-                                                document.write(new Date().getFullYear());
-                                            </script>
-                                            , made with ❤️ by
-                                            <a href="https://themeselection.com" target="_blank" class="footer-link fw-medium">ThemeSelection</a>
-                                        </div>
-                                        <div class="d-none d-lg-inline-block">
-                                            <a href="https://themeselection.com/item/category/admin-templates/"
-                                               target="_blank"
-                                               class="footer-link me-4">Admin Templates</a>
-
-                                            <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>
-
-                                            <a href="https://themeselection.com/item/category/bootstrap-templates/"
-                                               target="_blank"
-                                               class="footer-link me-4">Bootstrap Templates</a>
-                                            <a href="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/"
-                                               target="_blank"
-                                               class="footer-link me-4">Documentation</a>
-
-                                            <a href="https://github.com/themeselection/materio-bootstrap-html-admin-template-free/issues"
-                                               target="_blank"
-                                               class="footer-link">Support</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </footer>
-                            <!-- / Footer -->
-
-                            <div class="content-backdrop fade"></div>
-                        </div>
+                          
                         <!-- Content wrapper -->
                     </div>
                     <!-- / Layout page -->
@@ -308,12 +285,6 @@
                 <div class="layout-overlay layout-menu-toggle"></div>
             </div>
             <!-- / Layout wrapper -->
-
-            <div class="buy-now">
-                <a href="https://themeselection.com/item/materio-dashboard-pro-bootstrap/"
-                   target="_blank"
-                   class="btn btn-danger btn-buy-now">Upgrade to Pro</a>
-            </div>
 
             <!-- Core JS -->
             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -332,7 +303,8 @@
             <!-- Main JS -->
 
             <script src="assets/js/main.js"></script>
-            <script src="assets/js/roles.js"></script>
+            
+            <script src="assets/js/endpoint-management.js"></script>
 
             <!-- Page JS -->
             <!-- Place this tag before closing body tag for github widget button. -->

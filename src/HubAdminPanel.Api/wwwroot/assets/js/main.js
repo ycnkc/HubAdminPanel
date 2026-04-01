@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Main
  */
 
@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.add('ios');
   }
 });
+
+
 
 (function () {
   // Button & Pagination Waves effect

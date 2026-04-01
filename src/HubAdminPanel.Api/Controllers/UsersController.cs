@@ -32,7 +32,6 @@ namespace HubAdminPanel.Api.Controllers
         /// <param name="command">The details of the user to be created.</param>
         /// <returns>A success message and the newly created User ID, or a Bad Request error.</returns>
         [HttpPost("create")]
-        [Authorize(Policy = "UserCreate")]
         public async Task<IActionResult> Create([FromBody] CreateUserCommand command)
         {
             var userId = await _mediator.Send(command);
@@ -53,7 +52,6 @@ namespace HubAdminPanel.Api.Controllers
         /// <param name="command">The updated user data.</param>
         /// <returns>A success message if updated; otherwise, a Not Found response.</returns>
         [HttpPut("{id}")]
-        [Authorize(Policy = "UserUpdate")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserCommand command)
         {
             command.Id = id;
@@ -70,7 +68,6 @@ namespace HubAdminPanel.Api.Controllers
         /// </summary>
         /// <returns>A collection of User data.</returns>
         [HttpGet]
-        [Authorize(Policy = "UserView")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllUsersQuery query)
         {
             var result = await _mediator.Send(query);
@@ -83,7 +80,6 @@ namespace HubAdminPanel.Api.Controllers
         /// <param name="id">The unique identifier of the user to delete.</param>
         /// <returns>A success message if deleted; otherwise, a Not Found response.</returns>
         [HttpDelete("{id}")]
-        [Authorize(Policy = "UserDelete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _mediator.Send(new DeleteUserCommand { Id = id });

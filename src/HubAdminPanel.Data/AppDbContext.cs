@@ -23,6 +23,10 @@ namespace HubAdminPanel.Data
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<Token> Tokens { get; set; }
+        public DbSet<Endpoint> Endpoints { get; set; }
+        public DbSet<EndpointPermissionMapping> EndpointPermissionMappings { get; set; }
+        public DbSet<UserExtraPermission> UserExtraPermissions { get; set; }
 
         /// <summary>
         /// Configures the database schema and defines entity relationships using Fluent API.
@@ -71,6 +75,19 @@ namespace HubAdminPanel.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<EndpointPermissionMapping>()
+        .HasKey(ep => new { ep.EndpointId, ep.PermissionId });
+
+            modelBuilder.Entity<EndpointPermissionMapping>()
+                .HasOne(ep => ep.Endpoint)
+                .WithMany(e => e.EndpointPermissionMappings)
+                .HasForeignKey(ep => ep.EndpointId);
+
+            modelBuilder.Entity<EndpointPermissionMapping>()
+                .HasOne(ep => ep.Permission)
+                .WithMany(p => p.EndpointPermissionMappings)
+                .HasForeignKey(ep => ep.PermissionId);
         }
 
     }

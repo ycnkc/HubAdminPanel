@@ -9,7 +9,6 @@ namespace HubAdminPanel.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class RolesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -17,7 +16,6 @@ namespace HubAdminPanel.Api.Controllers
         public RolesController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet]
-        [Authorize(Policy = "UserView")]
         public async Task<IActionResult> GetRoles()
         {
             var roles = await _mediator.Send(new GetAllRolesQuery());
@@ -25,7 +23,6 @@ namespace HubAdminPanel.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "RoleManage")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleCommand command)
         {
             var roleId = await _mediator.Send(command);
@@ -33,7 +30,6 @@ namespace HubAdminPanel.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Policy = "RoleManage")]
         public async Task<IActionResult> UpdateRole(int id, [FromBody] UpdateRoleCommand command)
         {
             if (id != command.Id) return BadRequest("ID uyuşmazlığı.");
@@ -42,7 +38,6 @@ namespace HubAdminPanel.Api.Controllers
             return result ? Ok() : NotFound();
         }
 
-        [Authorize(Policy = "RoleManage")]
         [HttpGet("{id}")] 
         public async Task<IActionResult> GetById(int id)
         {
