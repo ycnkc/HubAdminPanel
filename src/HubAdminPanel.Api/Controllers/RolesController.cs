@@ -1,8 +1,6 @@
 ﻿using HubAdminPanel.Core.Features.Roles.Commands;
 using HubAdminPanel.Core.Features.Roles.Queries;
-using HubAdminPanel.Core.Features.Users.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HubAdminPanel.Api.Controllers
@@ -22,7 +20,7 @@ namespace HubAdminPanel.Api.Controllers
             return Ok(roles);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleCommand command)
         {
             var roleId = await _mediator.Send(command);
@@ -38,7 +36,7 @@ namespace HubAdminPanel.Api.Controllers
             return result ? Ok() : NotFound();
         }
 
-        [HttpGet("{id}")] 
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _mediator.Send(new GetRoleByIdQuery(id));

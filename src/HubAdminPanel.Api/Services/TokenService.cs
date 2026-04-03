@@ -36,19 +36,13 @@ namespace HubAdminPanel.Api.Services
         new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
         new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
         new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        
     };
 
             foreach (var userRole in user.UserRoles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
 
-                if (userRole.Role.RolePermissions != null)
-                {
-                    foreach (var rolePerm in userRole.Role.RolePermissions)
-                    {
-                        claims.Add(new Claim("Permission", rolePerm.Permission.Key));
-                    }
-                }
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -57,7 +51,7 @@ namespace HubAdminPanel.Api.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddMinutes(15),
                 SigningCredentials = creds,
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"]
@@ -80,7 +74,5 @@ namespace HubAdminPanel.Api.Services
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-
-
     }
 }

@@ -17,12 +17,7 @@ namespace HubAdminPanel.Core.Features.Roles.Queries
                 .Select(r => new RoleDto 
                 {
                     Id = r.Id, 
-                    Name = r.Name,
-                    Permissions = r.RolePermissions.Select(rp => new DTOs.PermissionDto
-                    {
-                        Id = rp.PermissionId,
-                        Name = rp.Permission.Key
-                    }).ToList()
+                    Name = r.Name             
                 })
                 .ToListAsync(cancellationToken);
         }

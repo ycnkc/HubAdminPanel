@@ -1,8 +1,8 @@
-﻿using HubAdminPanel.Core.DTOs;
-using HubAdminPanel.Core.Entities;
+﻿using HubAdminPanel.Core.Entities;
 using HubAdminPanel.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HubAdminPanel.Api.Controllers
 {
@@ -11,23 +11,44 @@ namespace HubAdminPanel.Api.Controllers
     public class ManagementController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMemoryCache _cache;
 
-        public ManagementController(AppDbContext context)
+        public ManagementController(AppDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         [HttpGet("endpoints")]
         public async Task<IActionResult> GetEndpoints()
         {
-            var endpoints = await _context.Endpoints
-                .Include(e => e.EndpointPermissionMappings)
-                    .ThenInclude(m => m.Permission)
-                .Include(e => e.EndpointUsers)
-                    .ThenInclude(u => u.User)
-                .ToListAsync();
+            try
+            {
+                var endpoints = await _context.Endpoints
+                    .Include(e => e.EndpointRoleMappings)
+                        .ThenInclude(m => m.Role)
+                    .AsNoTracking()
+                    .Select(e => new {
+                        e.Id,
+                        e.Path,
+                        e.Method,
+                        e.Description,
+                        EndpointRoleMappings = e.EndpointRoleMappings.Select(m => new {
+                            m.RoleId,
+                            Role = new
+                            {
+                                Name = m.Role.Name
+                            }
+                        }).ToList()
+                    })
+                    .ToListAsync();
 
-            return Ok(endpoints);
+                return Ok(endpoints);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("search")]
@@ -44,105 +65,45 @@ namespace HubAdminPanel.Api.Controllers
             return Ok(users);
         }
 
-        [HttpPost("assign-permission")]
-        public async Task<IActionResult> AssignPermission(int endpointId, int permissionId)
+        [HttpPost("assign-role")]
+        public async Task<IActionResult> AssignRole([FromQuery] int endpointId, [FromQuery] int roleId)
         {
-            var exists = await _context.EndpointPermissionMappings
-                .AnyAsync(m => m.EndpointId == endpointId && m.PermissionId == permissionId);
+            var exists = await _context.EndpointRoleMappings
+                .AnyAsync(m => m.EndpointId == endpointId && m.RoleId == roleId);
 
-            if (exists) return BadRequest("Bu yetki zaten bu endpoint'e atanmış.");
+            if (exists)
+                return BadRequest("Bu rol zaten bu endpoint'e atanmış.");
 
-            var mapping = new EndpointPermissionMapping
+            var mapping = new EndpointRoleMapping
             {
                 EndpointId = endpointId,
-                PermissionId = permissionId
+                RoleId = roleId
             };
 
-            _context.EndpointPermissionMappings.Add(mapping);
+            await _context.EndpointRoleMappings.AddAsync(mapping);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Yetki başarıyla eşleştirildi." });
+            _cache.Remove("AllEndpoints");
+
+            return Ok(new { message = "Rol başarıyla atandı." });
         }
 
-        [HttpDelete("remove-permission-from-endpoint/{endpointId}/{permissionId}")]
-        public async Task<IActionResult> RemovePermission(int endpointId, int permissionId)
+        [HttpDelete("remove-role-from-endpoint/{endpointId}/{roleId}")]
+        public async Task<IActionResult> RemoveRoleFromEndpoint(int endpointId, int roleId)
         {
-            var mapping = await _context.EndpointPermissionMappings
-                .FirstOrDefaultAsync(m => m.EndpointId == endpointId && m.PermissionId == permissionId);
+            var mapping = await _context.EndpointRoleMappings
+                .FirstOrDefaultAsync(m => m.EndpointId == endpointId && m.RoleId == roleId);
 
-            if (mapping == null) return NotFound("Eşleşme bulunamadı.");
+            if (mapping == null)
+                return NotFound("Böyle bir eşleşme bulunamadı.");
 
-            _context.EndpointPermissionMappings.Remove(mapping);
+            _context.EndpointRoleMappings.Remove(mapping);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Yetki bu endpoint'ten kaldırıldı." });
-        }
+            // Cache'i sil ki kullanıcının yetkisi anında düşsün!
+            _cache.Remove("AllEndpoints");
 
-        [HttpPost("assign-user-to-endpoint")]
-        public async Task<IActionResult> AssignUser([FromBody] EndpointUserDto dto)
-        {
-            var exists = await _context.EndpointUsers
-                .AnyAsync(x => x.EndpointId == dto.EndpointId && x.UserId == dto.UserId);
-
-            if (exists) return BadRequest("Bu kullanıcı zaten bu endpoint'e doğrudan erişim yetkisine sahip.");
-
-            var mapping = new EndpointUser { EndpointId = dto.EndpointId, UserId = dto.UserId };
-            _context.EndpointUsers.Add(mapping);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Kullanıcıya doğrudan erişim izni verildi." });
-        }
-
-        [HttpDelete("remove-user-from-endpoint/{endpointId}/{userId}")]
-        public async Task<IActionResult> RemoveUser(int endpointId, int userId)
-        {
-            var mapping = await _context.EndpointUsers
-                .FirstOrDefaultAsync(x => x.EndpointId == endpointId && x.UserId == userId);
-
-            if (mapping == null) return NotFound("Eşleşme bulunamadı.");
-
-            _context.EndpointUsers.Remove(mapping);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Kullanıcı erişimi başarıyla kaldırıldı." });
-        }
-
-        public class EndpointUserDto
-        {
-            public int EndpointId { get; set; }
-            public int UserId { get; set; }
-        }
-
-        [HttpPost("assign-users-bulk")]
-        public async Task<IActionResult> AssignUsersBulk([FromBody] BulkEndpointUserDto dto)
-        {
-            if (dto.UserIds == null || !dto.UserIds.Any())
-                return BadRequest("Kullanıcı listesi boş olamaz.");
-
-            foreach (var userId in dto.UserIds)
-            {
-                // Zaten varsa atla (Hata fırlatıp tüm işlemi bozmasın)
-                var exists = await _context.EndpointUsers
-                    .AnyAsync(x => x.EndpointId == dto.EndpointId && x.UserId == userId);
-
-                if (!exists)
-                {
-                    _context.EndpointUsers.Add(new EndpointUser
-                    {
-                        EndpointId = dto.EndpointId,
-                        UserId = userId
-                    });
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Seçilen kullanıcılara erişim yetkisi verildi." });
-        }
-
-        public class BulkEndpointUserDto
-        {
-            public int EndpointId { get; set; }
-            public List<int> UserIds { get; set; }
+            return Ok(new { message = "Rol eşleşmesi başarıyla silindi." });
         }
     }
 }

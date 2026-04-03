@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HubAdminPanel.Core.DTOs
+﻿namespace HubAdminPanel.Core.DTOs
 {
     public class RoleDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<PermissionDto> Permissions { get; set; } = new List<PermissionDto>();
     }
 
-   
+
 }

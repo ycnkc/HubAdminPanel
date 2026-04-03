@@ -60,32 +60,38 @@ async function fetchPermissions() {
 
 
 async function createNewRole() {
-    const roleName = document.getElementById('newRoleName').value;
-
-    const selectedPermissions = Array.from(document.querySelectorAll('.perm-checkbox:checked'))
+    const roleName = document.getElementById('newRoleName').value.trim();
+    const selectedEndpoints = Array.from(document.querySelectorAll('.endpoint-checkbox:checked'))
         .map(cb => parseInt(cb.value));
 
     if (!roleName) {
-        Swal.fire('Hata', 'Lütfen rol adı giriniz.', 'warning');
-        return;
+        return Swal.fire('Uyarı', 'Lütfen bir rol adı giriniz.', 'warning');
     }
 
-    const command = {
-        name: roleName,
-        permissionIds: selectedPermissions
+    const payload = {
+        Name: roleName,
+        EndpointIds: selectedEndpoints
     };
 
     try {
-        await api.post('/Roles', command);
+        await api.post('/Roles/create', payload);
 
-        Swal.fire('Başarılı', 'Yeni rol ve yetkileri oluşturuldu!', 'success');
+        await Swal.fire({
+            icon: 'success',
+            title: 'Başarılı',
+            text: 'Rol ve yetkiler başarıyla oluşturuldu.',
+            timer: 1500,
+            showConfirmButton: false
+        });
 
-        bootstrap.Modal.getInstance(document.getElementById('addRoleModal')).hide();
-        await fetchRoles();
+        const modalElement = document.getElementById('addRoleModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) modal.hide();
 
+        location.reload();
     } catch (error) {
         console.error("Rol oluşturma hatası:", error);
-        Swal.fire('Hata', 'Rol oluşturulamadı.', 'error');
+        Swal.fire('Hata', 'Rol oluşturulurken bir sorun oluştu.', 'error');
     }
 }
 

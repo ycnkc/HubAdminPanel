@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using HubAdminPanel.Core.Entities; // Kendi Entity namespace'in
+using HubAdminPanel.Core.Entities;
 using HubAdminPanel.Core.Features.Auth.Commands;
 using HubAdminPanel.Core.Interfaces;
 
@@ -19,17 +18,6 @@ namespace HubAdminPanel.Core.Features.Auth.Handlers
 
         public async Task<object> Handle(GenerateTokenCommand request, CancellationToken cancellationToken)
         {
-            var hasAccess = await _context.UserRoles
-                .Where(ur => ur.UserId == request.UserId)
-                .Join(_context.RolePermissions, ur => ur.RoleId, rp => rp.RoleId, (ur, rp) => rp)
-                .Join(_context.Permissions, rp => rp.PermissionId, p => p.Id, (rp, p) => p)
-                .AnyAsync(p => p.Key == "Token.Access", cancellationToken);
-
-            if (!hasAccess)
-            {
-                throw new UnauthorizedAccessException("Yetkiniz bulunmamaktadır.");
-            }
-
             string originalToken = "HUB-" + Guid.NewGuid().ToString("N").ToUpper();
             string hashedToken = ComputeSha256Hash(originalToken);
             string lastFour = originalToken.Substring(originalToken.Length - 4);

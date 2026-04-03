@@ -226,7 +226,7 @@ async function saveRolePermissions() {
     };
 
     try {
-        const response = await api.put(`/Roles/${roleId}`, updateDto);
+        const response = await api.post(`/Roles/${roleId}`, updateDto);
 
         Swal.fire({
             title: 'Başarılı!',

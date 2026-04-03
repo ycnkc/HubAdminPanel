@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace HubAdminPanel.Core.Entities
 {
-    public class EndpointUser
+    public class EndpointRoleMapping
     {
-        public int Id { get; set; }
         public int EndpointId { get; set; }
-        public int UserId { get; set; }
-
         public Endpoint Endpoint { get; set; }
-        public User User { get; set; }
+
+        public int RoleId { get; set; }
+        public Role Role { get; set; }
     }
 }

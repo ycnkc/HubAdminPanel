@@ -38,9 +38,7 @@ namespace HubAdminPanel.Core.Features.Auth.Commands
             var user = await _context.Users
                     .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
-                    .ThenInclude(r => r.RolePermissions)
-                .ThenInclude(rp => rp.Permission)
-    .FirstOrDefaultAsync(u => u.Username == request.Username);
+                .FirstOrDefaultAsync(u => u.Username == request.Username);
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 

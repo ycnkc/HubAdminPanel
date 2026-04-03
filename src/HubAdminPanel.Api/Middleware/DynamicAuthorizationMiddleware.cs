@@ -1,5 +1,8 @@
 ﻿using HubAdminPanel.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Concurrent;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace HubAdminPanel.Api.Middleware
@@ -7,15 +10,27 @@ namespace HubAdminPanel.Api.Middleware
     public class DynamicAuthorizationMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly IMemoryCache _cache;
 
-        public DynamicAuthorizationMiddleware(RequestDelegate next)
+        private static readonly ConcurrentDictionary<string, Regex> _regexCache = new();
+
+        public DynamicAuthorizationMiddleware(RequestDelegate next, IMemoryCache cache)
         {
             _next = next;
+            _cache = cache;
         }
 
         public async Task InvokeAsync(HttpContext context, AppDbContext dbContext)
         {
-            if (context.Request.Path.StartsWithSegments("/api/Roles") || context.Request.Path.StartsWithSegments("/api/Auth"))
+            var path = context.Request.Path;
+
+            if (context.User.IsInRole("Admin"))
+            {
+                await _next(context);
+                return;
+            }
+
+            if (path.StartsWithSegments("/api/Auth") || path.StartsWithSegments("/api/Roles"))
             {
                 await _next(context);
                 return;
@@ -27,62 +42,48 @@ namespace HubAdminPanel.Api.Middleware
                 return;
             }
 
-            var path = context.Request.Path.Value;
             var method = context.Request.Method;
-            var userId = int.Parse(context.User.FindFirst("userId")?.Value ?? "0");
+            var pathValue = path.Value!;
 
-            var allEndpoints = await dbContext.Endpoints.ToListAsync();
-            var matchedEndpoint = allEndpoints.FirstOrDefault(e =>
-                e.Method == method && IsPathMatch(e.Path, path));
+            var allEndpoints = await _cache.GetOrCreateAsync("AllEndpoints", async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+                return await dbContext.Endpoints
+                    .Include(e => e.EndpointRoleMappings) 
+                        .ThenInclude(m => m.Role)
+                    .AsNoTracking()
+                    .ToListAsync();
+            });
+
+            var matchedEndpoint = allEndpoints?.FirstOrDefault(e =>
+                e.Method == method && IsPathMatch(e.Path, pathValue));
 
             if (matchedEndpoint == null)
             {
-                await _next(context);
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsJsonAsync(new { message = "Bu endpoint sisteme kayıtlı değil veya erişime kapalı." });
                 return;
             }
 
-            var userRoles = context.User.FindAll(System.Security.Claims.ClaimTypes.Role)
-                            .Select(r => r.Value).ToList();
+            var requiredRoles = matchedEndpoint.EndpointRoleMappings
+                .Select(m => m.Role.Name) 
+                .ToList();
 
-            if (userRoles.Contains("Admin"))
-            {
-                await _next(context);
-                return;
-            }
-
-            var hasDirectAccess = await dbContext.EndpointUsers
-                .AnyAsync(x => x.UserId == userId && x.EndpointId == matchedEndpoint.Id);
-
-            if (hasDirectAccess)
-            {
-                await _next(context);
-                return;
-            }
-
-            var requiredPermissions = await dbContext.EndpointPermissionMappings
-                .Where(m => m.EndpointId == matchedEndpoint.Id)
-                .Select(m => m.Permission.Key)
-                .ToListAsync();
-
-            if (!requiredPermissions.Any())
+            if (!requiredRoles.Any())
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(new { message = "Bu işlem için herhangi bir yetki tanımlanmamış!" });
+                await context.Response.WriteAsJsonAsync(new { message = "Bu işlem için herhangi bir rol tanımlanmamış!" });
                 return;
             }
 
-            var rolePermissions = context.User.Claims
-                .Where(c => c.Type == "Permission")
-                .Select(c => c.Value);
+            var userRoles = context.User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            var extraPermissions = await dbContext.UserExtraPermissions
-                .Where(up => up.UserId == userId)
-                .Select(up => up.Permission.Key)
-                .ToListAsync();
+            bool isAuthorized = requiredRoles.Intersect(userRoles).Any();
 
-            var allUserPermissions = rolePermissions.Concat(extraPermissions).Distinct();
-
-            if (requiredPermissions.Any(rp => allUserPermissions.Contains(rp)))
+            if (isAuthorized)
             {
                 await _next(context);
             }
@@ -95,8 +96,13 @@ namespace HubAdminPanel.Api.Middleware
 
         private bool IsPathMatch(string template, string actualPath)
         {
-            var pattern = "^" + Regex.Replace(template, "{[a-zA-Z0-9]+}", "[a-zA-Z0-9-]+") + "$";
-            return Regex.IsMatch(actualPath, pattern, RegexOptions.IgnoreCase);
+            var regex = _regexCache.GetOrAdd(template, t =>
+            {
+                var pattern = "^" + Regex.Replace(t, "{[a-zA-Z0-9]+}", "[a-zA-Z0-9-]+") + "$";
+                return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            });
+
+            return regex.IsMatch(actualPath);
         }
     }
 }

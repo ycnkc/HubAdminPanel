@@ -20,14 +20,12 @@ namespace HubAdminPanel.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
-        public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Endpoint> Endpoints { get; set; }
-        public DbSet<EndpointPermissionMapping> EndpointPermissionMappings { get; set; }
-        public DbSet<UserExtraPermission> UserExtraPermissions { get; set; }
-        public DbSet<EndpointUser> EndpointUsers { get; set; }
+        public DbSet<EndpointRoleMapping> EndpointRoleMappings { get; set; }
+
+
 
         /// <summary>
         /// Configures the database schema and defines entity relationships using Fluent API.
@@ -43,8 +41,6 @@ namespace HubAdminPanel.Data
                 new Role { Id = 2, Name = "User" }
                 );
 
-            modelBuilder.Entity<RolePermission>()
-                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
 
 
             modelBuilder.Entity<UserRole>()
@@ -60,35 +56,24 @@ namespace HubAdminPanel.Data
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId);
 
-            modelBuilder.Entity<RolePermission>()
-                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
-
-            modelBuilder.Entity<RolePermission>()
-            .HasOne(rp => rp.Role)
-            .WithMany(r => r.RolePermissions)
-            .HasForeignKey(rp => rp.RoleId);
-
-            modelBuilder.Entity<RolePermission>()
-                .HasOne(rp => rp.Permission)
-                .WithMany(p => p.RolePermissions)
-                .HasForeignKey(rp => rp.PermissionId);
-
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            modelBuilder.Entity<EndpointPermissionMapping>()
-        .HasKey(ep => new { ep.EndpointId, ep.PermissionId });
+            modelBuilder.Entity<EndpointRoleMapping>(entity =>
+            {
+                entity.HasKey(er => new { er.EndpointId, er.RoleId });
 
-            modelBuilder.Entity<EndpointPermissionMapping>()
-                .HasOne(ep => ep.Endpoint)
-                .WithMany(e => e.EndpointPermissionMappings)
-                .HasForeignKey(ep => ep.EndpointId);
+                entity.HasOne(er => er.Endpoint)
+                      .WithMany(e => e.EndpointRoleMappings)
+                      .HasForeignKey(er => er.EndpointId);
 
-            modelBuilder.Entity<EndpointPermissionMapping>()
-                .HasOne(ep => ep.Permission)
-                .WithMany(p => p.EndpointPermissionMappings)
-                .HasForeignKey(ep => ep.PermissionId);
+                entity.HasOne(er => er.Role)
+                      .WithMany(r => r.EndpointRoleMappings) 
+                      .HasForeignKey(er => er.RoleId);
+            });
+
+
         }
 
     }

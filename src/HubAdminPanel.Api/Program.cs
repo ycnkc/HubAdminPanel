@@ -20,6 +20,7 @@ var config = TypeAdapterConfig.GlobalSettings;
 config.Scan(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IMapper, ServiceMapper>();
+builder.Services.AddMemoryCache();
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -46,6 +47,8 @@ builder.Services.AddMediatR(cfg => {
 
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<EndpointService>();
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -108,6 +111,11 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var discoveryService = scope.ServiceProvider.GetRequiredService<EndpointService>();
+    await discoveryService.DiscoverEndpointsAsync();
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -122,8 +130,8 @@ app.UseRouting();
 app.UseHttpsRedirection();
 app.UseCors("AllowMataeo");
 app.UseAuthentication();
-app.UseMiddleware<DynamicAuthorizationMiddleware>(); app.UseMiddleware<DynamicAuthorizationMiddleware>();
 app.UseAuthorization();
+app.UseMiddleware<DynamicAuthorizationMiddleware>(); app.UseMiddleware<DynamicAuthorizationMiddleware>();
 app.MapControllers();
 
 app.Run();

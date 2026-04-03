@@ -10,6 +10,6 @@ namespace HubAdminPanel.Core.Features.Roles.Commands
     public class CreateRoleCommand : IRequest<int>
     {
         public string Name { get; set; }
-        public List<int> PermissionIds { get; set; } = new List<int>(); // Seçilen yetkiler
+        public List<int> EndpointIds { get; set; } = new List<int>(); 
     }
 }

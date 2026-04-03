@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HubAdminPanel.Core.Entities
+﻿namespace HubAdminPanel.Core.Entities
 {
     public class Endpoint
     {
@@ -13,8 +7,7 @@ namespace HubAdminPanel.Core.Entities
         public string Method { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<EndpointPermissionMapping> EndpointPermissionMappings { get; set; }
+        public ICollection<EndpointRoleMapping> EndpointRoleMappings { get; set; }
 
-        public ICollection<EndpointUser> EndpointUsers { get; set; }
     }
 }

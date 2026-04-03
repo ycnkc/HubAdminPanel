@@ -9,7 +9,7 @@ namespace HubAdminPanel.Core.Features.Roles.Commands
 {
     public class UpdateRoleCommand : IRequest<bool>
     {
-        public int Id { get; set; } // Hangi rolün güncelleneceği
+        public int Id { get; set; } 
         public string Name { get; set; }
         public List<int> PermissionIds { get; set; }
     }

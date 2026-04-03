@@ -1,6 +1,6 @@
-﻿using HubAdminPanel.Core.Common; 
+﻿using HubAdminPanel.Core.Common;
 using HubAdminPanel.Core.DTOs;
-using Mapster; 
+using Mapster;
 using MediatR;
 using HubAdminPanel.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +20,7 @@ namespace HubAdminPanel.Core.Features.Users.Queries
         {
             var query = _context.Users
                 .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
-                    .ThenInclude(r => r.RolePermissions)
-                        .ThenInclude(rp => rp.Permission) 
+                    .ThenInclude(ur => ur.Role)
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
@@ -43,8 +41,8 @@ namespace HubAdminPanel.Core.Features.Users.Queries
             }
 
             var totalCount = await query.CountAsync(cancellationToken);
-            var activeCount = await query.CountAsync(u => u.IsActive); 
-            var adminCount = await query.CountAsync(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"));
+            var activeCount = await query.CountAsync(u => u.IsActive, cancellationToken);
+            var adminCount = await query.CountAsync(u => u.UserRoles.Any(ur => ur.Role.Name == "Admin"), cancellationToken);
 
             var items = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
@@ -54,8 +52,7 @@ namespace HubAdminPanel.Core.Features.Users.Queries
             var roleCounts = await _context.UserRoles
                 .GroupBy(ur => ur.Role.Name)
                 .Select(g => new { RoleName = g.Key, Count = g.Count() })
-                .ToDictionaryAsync(x => x.RoleName, x => x.Count);
-
+                .ToDictionaryAsync(x => x.RoleName, x => x.Count, cancellationToken);
 
             var dtos = items.Select(u => new UserDto
             {
@@ -73,7 +70,7 @@ namespace HubAdminPanel.Core.Features.Users.Queries
                 TotalCount = totalCount,
                 PageNumber = request.PageNumber,
                 PageSize = request.PageSize,
-                ActiveCount = activeCount, 
+                ActiveCount = activeCount,
                 AdminCount = adminCount,
                 RoleCounts = roleCounts
             };

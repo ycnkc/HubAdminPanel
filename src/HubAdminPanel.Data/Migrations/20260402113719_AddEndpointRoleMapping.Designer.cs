@@ -4,6 +4,7 @@ using HubAdminPanel.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HubAdminPanel.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260402113719_AddEndpointRoleMapping")]
+    partial class AddEndpointRoleMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,6 +65,27 @@ namespace HubAdminPanel.Data.Migrations
                     b.ToTable("EndpointRoleMappings");
                 });
 
+            modelBuilder.Entity("HubAdminPanel.Core.Entities.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
             modelBuilder.Entity("HubAdminPanel.Core.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -89,6 +113,21 @@ namespace HubAdminPanel.Data.Migrations
                             Id = 2,
                             Name = "User"
                         });
+                });
+
+            modelBuilder.Entity("HubAdminPanel.Core.Entities.RolePermission", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("HubAdminPanel.Core.Entities.Token", b =>
@@ -192,12 +231,31 @@ namespace HubAdminPanel.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("HubAdminPanel.Core.Entities.Role", "Role")
-                        .WithMany("EndpointRoleMappings")
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Endpoint");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("HubAdminPanel.Core.Entities.RolePermission", b =>
+                {
+                    b.HasOne("HubAdminPanel.Core.Entities.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HubAdminPanel.Core.Entities.Role", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
 
                     b.Navigation("Role");
                 });
@@ -226,9 +284,14 @@ namespace HubAdminPanel.Data.Migrations
                     b.Navigation("EndpointRoleMappings");
                 });
 
+            modelBuilder.Entity("HubAdminPanel.Core.Entities.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
             modelBuilder.Entity("HubAdminPanel.Core.Entities.Role", b =>
                 {
-                    b.Navigation("EndpointRoleMappings");
+                    b.Navigation("RolePermissions");
 
                     b.Navigation("UserRoles");
                 });

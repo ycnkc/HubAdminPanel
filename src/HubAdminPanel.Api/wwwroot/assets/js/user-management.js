@@ -3,8 +3,6 @@ let searchTerm = "";
 let searchTimeout;
 let currentPage = 1;
 
-
-// 3. Rendering user table
 const renderUserTable = (users) => {
     const tableBody = document.getElementById('userTableBody');
     if (!tableBody) return;
@@ -35,13 +33,13 @@ const renderUserTable = (users) => {
                 </td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary me-2 btn-perm" 
-                            data-permission="USER_UPDATE" 
+                            data-roles="Admin" 
                             onclick="openEditModal(${userId})">
                         <i class="ri-edit-box-line"></i> Düzenle
                     </button>
                     
                     <button class="btn btn-sm btn-danger btn-perm" 
-                            data-permission="USER_DELETE" 
+                            data-roles="Admin" 
                             onclick="deleteUser(${userId})">
                         <i class="ri-delete-bin-line"></i> Sil
                     </button>
@@ -49,36 +47,30 @@ const renderUserTable = (users) => {
             </tr>`;
     }).join('');
 
-    if (typeof checkUIByPermissions === 'function') {
-        checkUIByPermissions();
+    if (typeof checkUIByRoles === 'function') {
+        checkUIByRoles();
     }
 };
 
-// 5. Searching
 async function handleSearch(event) {
     searchTerm = event.target.value;
-    currentPage = 1; // Arama yapılınca her zaman 1. sayfaya dönmeliyiz
+    currentPage = 1;
     await fetchUsers(1);
 }
 
-//filtering
 window.applyFilters = function () {
-    currentPage = 1; 
+    currentPage = 1;
     fetchUsers(1);
 };
 
-// Initialization
 document.addEventListener('DOMContentLoaded', async () => {
     if (!checkAuth()) return;
     await fetchRoles();
-    await fetchPermissions();
-    
+
     const nameEl = document.getElementById('navUserName');
     const roleEl = document.getElementById('navUserRole');
     if (nameEl) nameEl.innerText = localStorage.getItem('username') || 'User';
     if (roleEl) roleEl.innerText = localStorage.getItem('userRole') || 'Guest';
-
-
 
     const searchInput = document.getElementById('userSearchInput');
     if (searchInput) {
@@ -87,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             searchTerm = e.target.value;
             searchTimeout = setTimeout(() => {
                 console.log("Arama yapılıyor:", searchTerm);
-                fetchUsers(1); 
+                fetchUsers(1);
             }, 500);
         });
     }
@@ -95,8 +87,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchUsers(1);
 });
 
-
-//API Functions (CRUD)
 async function deleteUser(id) {
     const result = await Swal.fire({
         title: 'Emin misiniz?',
@@ -113,7 +103,7 @@ async function deleteUser(id) {
         try {
             await api.delete(`/users/${id}`);
             Swal.fire('Silindi!', 'Kullanıcı başarıyla silindi.', 'success');
-            fetchUsers(currentPage); 
+            fetchUsers(currentPage);
         } catch (error) {
             Swal.fire('Hata!', 'Silme işlemi başarısız.', 'error');
         }
@@ -157,13 +147,12 @@ async function saveUser() {
         Swal.fire({
             icon: 'error',
             title: 'Kayıt Durduruldu!',
-            text: errorMessage, 
+            text: errorMessage,
             confirmButtonColor: '#696cff'
         });
     }
 }
 
-//editing
 function openEditModal(userId) {
     const user = allUsers.find(u => (u.id || u.Id) === userId);
     if (!user) return;
@@ -181,7 +170,7 @@ function openEditModal(userId) {
 
         if (rId) {
             roleSelect.value = rId.toString();
-        } 
+        }
     }
 
     const modalElement = document.getElementById('editUserModal');
@@ -217,22 +206,18 @@ async function updateUser() {
             title: 'Kullanıcı güncellendi'
         });
 
-        fetchUsers(currentPage); 
+        fetchUsers(currentPage);
 
     } catch (error) {
         Swal.fire('Hata!', 'Güncelleme yapılamadı.', 'error');
     }
 }
 
-
-
-//page numbers
 function renderPagination(data) {
     const paginationList = document.getElementById('paginationList');
     if (!paginationList) return;
 
     paginationList.innerHTML = "";
-
 
     for (let i = 1; i <= data.totalPages; i++) {
         const isActive = i === data.pageNumber ? 'active' : '';
@@ -248,23 +233,16 @@ function renderPagination(data) {
     }
 }
 
-
-
-// fetching data
 async function fetchUsers(page = 1) {
-    currentPage = page;
-
     const status = document.getElementById('filterStatus').value;
     const roleId = document.getElementById('filterRole').value;
-
 
     try {
         const response = await api.get('/users', {
             params: {
                 pageNumber: page,
-                pageSize: 5,
-                searchTerm: searchTerm,
-
+                pageSize: PaginationManager.pageSize,
+                searchTerm: typeof searchTerm !== 'undefined' ? searchTerm : '',
                 isActive: status === "" ? null : status,
                 roleId: roleId === "" ? null : roleId
             }
@@ -275,11 +253,14 @@ async function fetchUsers(page = 1) {
 
         renderUserTable(allUsers);
 
-        renderPagination(pagedData);
-        updateDashboardStats(pagedData);
+        PaginationManager.update(pagedData, fetchUsers);
 
-        if (typeof checkUIByPermissions === 'function') {
-            checkUIByPermissions();
+        if (typeof updateDashboardStats === 'function') {
+            updateDashboardStats(pagedData);
+        }
+
+        if (typeof checkUIByRoles === 'function') {
+            checkUIByRoles();
         }
 
     } catch (error) {
@@ -287,7 +268,6 @@ async function fetchUsers(page = 1) {
     }
 }
 
-//Handle exception
 function handleApiError(error) {
     console.error("API Hatası:", error);
     if (error.response?.status === 401) {
@@ -298,5 +278,93 @@ function handleApiError(error) {
     }
 }
 
+let modalEndpoints = []; 
+async function fetchEndpointsForModal() {
+    try {
+        const response = await api.get('/Management/endpoints');
+        modalEndpoints = response.data;
+        renderEndpointChecklist(modalEndpoints);
+    } catch (error) {
+        document.getElementById('endpointChecklist').innerHTML = '<div class="text-danger">Yüklenemedi.</div>';
+    }
+}
 
+function renderEndpointChecklist(endpoints) {
+    const container = document.getElementById('endpointChecklist');
+    container.innerHTML = '';
 
+    if (endpoints.length === 0) {
+        container.innerHTML = '<div class="text-muted small">Eşleşen endpoint bulunamadı.</div>';
+        return;
+    }
+
+    endpoints.forEach(ep => {
+        const methods = { 'GET': 'text-success', 'POST': 'text-primary', 'PUT': 'text-warning', 'DELETE': 'text-danger' };
+        const methodClass = methods[ep.method] || 'text-secondary';
+
+        const item = `
+            <div class="form-check endpoint-item mb-1" data-path="${ep.path.toLowerCase()}" data-method="${ep.method}">
+                <input class="form-check-input endpoint-checkbox" type="checkbox" value="${ep.id}" id="ep_${ep.id}">
+                <label class="form-check-label d-flex justify-content-between w-100" for="ep_${ep.id}">
+                    <span class="small fw-bold ${methodClass} me-2">${ep.method}</span>
+                    <span class="small text-truncate">${ep.path}</span>
+                </label>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', item);
+    });
+}
+
+function filterEndpointsInModal() {
+    const searchQuery = document.getElementById('endpointSearchInModal').value.toLowerCase();
+    const selectedMethod = document.getElementById('methodFilterInModal').value;
+
+    document.querySelectorAll('.endpoint-item').forEach(el => {
+        const path = el.getAttribute('data-path');
+        const method = el.getAttribute('data-method');
+
+        const matchesSearch = path.includes(searchQuery);
+        const matchesMethod = selectedMethod === "" || method === selectedMethod;
+
+        if (matchesSearch && matchesMethod) {
+            el.classList.remove('d-none');
+        } else {
+            el.classList.add('d-none');
+        }
+    });
+}
+
+async function createNewRole() {
+    const roleName = document.getElementById('newRoleName').value.trim();
+    const selectedEndpoints = Array.from(document.querySelectorAll('.endpoint-checkbox:checked'))
+        .map(cb => parseInt(cb.value));
+
+    if (!roleName) return Swal.fire('Hata', 'Lütfen rol adı girin', 'error');
+
+    try {
+        await api.post('/Roles/create', {
+            Name: roleName,
+            EndpointIds: selectedEndpoints
+        });
+
+        Swal.fire('Başarılı', 'Rol ve endpoint yetkileri oluşturuldu', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addRoleModal')).hide();
+        location.reload();
+    } catch (error) {
+        Swal.fire('Hata', 'İşlem başarısız oldu', 'error');
+    }
+}
+
+function toggleSelectAll(mainCheckbox) {
+    const checkboxes = document.querySelectorAll('.endpoint-checkbox');
+    
+    checkboxes.forEach(cb => {
+        const parentItem = cb.closest('.endpoint-item');
+        if (parentItem && !parentItem.classList.contains('d-none')) {
+            cb.checked = mainCheckbox.checked;
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchEndpointsForModal();
+});

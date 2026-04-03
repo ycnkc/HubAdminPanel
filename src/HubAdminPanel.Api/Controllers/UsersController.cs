@@ -1,7 +1,6 @@
 ﻿using HubAdminPanel.Core.Features.Users.Commands;
 using HubAdminPanel.Core.Features.Users.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HubAdminPanel.Api.Controllers
@@ -11,7 +10,7 @@ namespace HubAdminPanel.Api.Controllers
     /// Acts as an entry point for administrative user operations like creation, updates, and deletion.
     /// </summary>
     //[Authorize(Roles = "Admin")]
-    [ApiController] 
+    [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
