@@ -1,7 +1,4 @@
-﻿/**
- * HubAdminPanel - Roles Management (Endpoint Based - Materio Version)
- */
-const roleModalElement = document.getElementById('roleModal');
+﻿const roleModalElement = document.getElementById('roleModal');
 let roleModal;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -80,7 +77,6 @@ async function fetchRoles() {
 
 async function loadEndpoints(selectedIds = []) {
     const container = document.getElementById('endpointList');
-    const countBadge = document.getElementById('selectedCount');
     if (!container) return;
 
     try {
@@ -102,25 +98,26 @@ async function loadEndpoints(selectedIds = []) {
         };
 
         let html = `
-            <div class="form-check mb-3 pb-2 ">
+            <div class="form-check mb-3 pb-2 border-bottom">
                 <input class="form-check-input" type="checkbox" id="selectAllEndpoints">
                 <label class="form-check-label fw-bold" for="selectAllEndpoints">Tümünü Seç / Kaldır</label>
             </div>
         `;
 
         html += endpoints.map(ep => {
-            const isChecked = selectedIds.includes(ep.id || ep.Id) ? 'checked' : '';
+            const epId = ep.id || ep.Id;
+            const isChecked = selectedIds.includes(epId) ? 'checked' : '';
             const badgeClass = methodColors[ep.method] || 'bg-label-secondary';
 
             return `
                 <div class="d-flex justify-content-between align-items-center border-bottom py-2 px-1 endpoint-item">
-                    <label class="form-check-label fw-medium mb-0" for="ep${ep.id}" style="cursor:pointer;">
+                    <label class="form-check-label fw-medium mb-0" for="ep${epId}" style="cursor:pointer; flex-grow: 1;">
                         <span class="badge ${badgeClass} me-2" style="width: 60px;">${ep.method}</span>
                         <span class="text-dark">${ep.path}</span>
                         <div class="small text-muted italic" style="font-size: 0.75rem;">${ep.description || ''}</div>
                     </label>
                     <div class="form-check mb-0">
-                        <input class="form-check-input endpoint-cb" type="checkbox" value="${ep.id}" id="ep${ep.id}" ${isChecked} />
+                        <input class="form-check-input endpoint-cb" type="checkbox" value="${epId}" id="ep${epId}" ${isChecked} />
                     </div>
                 </div>`;
         }).join('');
@@ -148,10 +145,10 @@ function setupEndpointListeners() {
             items.forEach(item => {
                 const text = item.innerText.toLowerCase();
                 if (text.includes(searchTerm)) {
-                    item.classList.remove('d-none'); 
+                    item.classList.remove('d-none');
                     item.classList.add('d-flex');
                 } else {
-                    item.classList.remove('d-flex');  
+                    item.classList.remove('d-flex');
                     item.classList.add('d-none');
                 }
             });
@@ -164,11 +161,17 @@ function setupEndpointListeners() {
 
     if (selectAll) {
         selectAll.addEventListener('change', (e) => {
-            checkboxes.forEach(cb => cb.checked = e.target.checked);
+            checkboxes.forEach(cb => {
+                const item = cb.closest('.endpoint-item');
+                if (item && !item.classList.contains('d-none')) {
+                    cb.checked = e.target.checked;
+                }
+            });
             updateSelectedCount();
         });
     }
 }
+
 function updateSelectedCount() {
     const count = document.querySelectorAll('.endpoint-cb:checked').length;
     const badge = document.getElementById('selectedCount');
@@ -178,6 +181,7 @@ function updateSelectedCount() {
         badge.classList.toggle('fw-bold', count > 0);
     }
 }
+
 async function prepareEdit(id, name) {
     document.getElementById('roleIdInput').value = id;
     document.getElementById('roleNameInput').value = name;
@@ -229,7 +233,7 @@ async function saveRoleEndpoints() {
             await api.post('/Roles/create', payload);
         }
 
-        Swal.fire({ title: 'Başarılı!', text: 'Kaydedildi.', icon: 'success', timer: 1500 });
+        Swal.fire({ title: 'Başarılı!', text: 'Kaydedildi.', icon: 'success', timer: 1500, showConfirmButton: false });
         roleModal.hide();
         fetchRoles();
     } catch (error) {
@@ -252,7 +256,7 @@ async function deleteRole(id) {
     if (result.isConfirmed) {
         try {
             await api.delete(`/Roles/${id}`);
-            Swal.fire('Silindi!', 'Başarıyla silindi.', 'success');
+            Swal.fire({ title: 'Silindi!', text: 'Başarıyla silindi.', icon: 'success', timer: 1500, showConfirmButton: false });
             fetchRoles();
         } catch (error) {
             Swal.fire('Hata', 'Silme başarısız.', 'error');

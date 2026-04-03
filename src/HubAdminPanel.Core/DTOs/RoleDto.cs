@@ -8,6 +8,7 @@ namespace HubAdminPanel.Core.DTOs
         public string Name { get; set; }
 
         public List<EndpointRoleMappingDto> EndpointRoleMappings { get; set; } = new();
+        public List<int> AssignedEndpointIds { get; set; }
     }
 
 }

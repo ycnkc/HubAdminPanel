@@ -17,7 +17,7 @@ namespace HubAdminPanel.Core.Features.Roles.Queries
                 .Select(r => new RoleDto
                 {
                     Id = r.Id,
-                    Name = r.Name,
+                    Name = r.Name
                   
                 })
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);

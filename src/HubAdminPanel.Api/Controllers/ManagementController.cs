@@ -1,4 +1,5 @@
 ﻿using HubAdminPanel.Core.Entities;
+using HubAdminPanel.Core.Features.Endpoints.Commands;
 using HubAdminPanel.Core.Features.Management.Queries;
 using HubAdminPanel.Data;
 using MediatR;
@@ -84,6 +85,17 @@ namespace HubAdminPanel.Api.Controllers
             return Ok(new { message = "Rol eşleşmesi başarıyla silindi." });
         }
 
+        [HttpDelete("endpoints/{id}")]
+        public async Task<IActionResult> DeleteEndpoint(int id)
+        {
+            var result = await _mediator.Send(new DeleteEndpointCommand(id));
+            if (result)
+            {
+                _cache.Remove("AllEndpoints"); 
+                return Ok();
+            }
+            return NotFound();
+        }
 
     }
 }

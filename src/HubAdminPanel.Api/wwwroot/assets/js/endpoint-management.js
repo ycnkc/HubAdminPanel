@@ -24,7 +24,6 @@ async function loadEndpoints(preservePage = false) {
             (methodQuery === "" || ep.method === methodQuery)
         );
 
-        // Eğer preservePage true ise mevcut sayfada kal, yoksa 1. sayfaya dön
         const targetPage = preservePage ? (PaginationManager.currentPage || 1) : 1;
         loadPage(targetPage);
     } catch (error) {
@@ -97,12 +96,39 @@ function renderTable(endpoints) {
                             <a class="dropdown-item" href="javascript:void(0);" onclick="openAssignModal(${ep.id}, '${ep.path}')">
                                 <i class="mdi mdi-shield-check-outline me-1"></i> Role Ata
                             </a>
+                            <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteEndpoint(${ep.id})">
+                                <i class="mdi mdi-delete-outline me-1"></i> Endpoint'i Sil
+                            </a>
                         </div>
                     </div>
                 </td>
             </tr>`;
     });
 }
+
+async function deleteEndpoint(id) {
+    const result = await Swal.fire({
+        title: 'Emin misiniz?',
+        text: "Bu endpoint silindiğinde bağlı tüm yetki tanımları da kaldırılacaktır!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Evet, sil!',
+        cancelButtonText: 'Vazgeç'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await api.delete(`/Management/endpoints/${id}`);
+            showToast('Başarılı', 'Endpoint başarıyla silindi', 'success');
+            await loadEndpoints(true);
+        } catch (error) {
+            showToast('Hata', error.response?.data || 'Silme işlemi başarısız', 'error');
+        }
+    }
+}
+
 async function loadRoles() {
     try {
         const response = await api.get('/Roles');
@@ -205,8 +231,6 @@ function filterModalList() {
         }
     });
 }
-
-
 
 window.applyFilters = function () {
     const pathQuery = document.getElementById('filterPath')?.value.toLowerCase() || "";
