@@ -217,7 +217,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Rol İsmi</th>
-                                                    <th>Yetkiler</th>
+                                                    <th>Erişilebir Endpointler</th>
                                                     <th>Durum</th>
                                                     <th>İşlemler</th>
                                                 </tr>
@@ -230,31 +230,38 @@
                             </div>
 
                             <div class="modal fade" id="roleModal" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="modalTitle">Rol Ayarları</h5>
+                                            <h5 class="modal-title" id="modalTitle">Rol ve Erişim Ayarları</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <input type="hidden" id="roleIdInput">
-                                            <div class="row">
-                                                <div class="col mb-4">
-                                                    <label for="roleNameInput" class="form-label">Rol Adı</label>
+
+                                            <div class="row mb-3">
+                                                <div class="col">
+                                                    <label for="roleNameInput" class="form-label fw-bold">Rol Adı</label>
                                                     <input type="text" id="roleNameInput" class="form-control" placeholder="Örn: Editor" />
                                                 </div>
                                             </div>
+
                                             <div class="row">
-                                                <div class="col mb-0">
-                                                    <label class="form-label">Yetki Tanımları</label>
-                                                    <div id="permissionList" class="p-2 border rounded" style="max-height: 200px; overflow-y: auto;">
+                                                <div class="col">
+                                                    <label class="form-label fw-bold d-flex justify-content-between">
+                                                        Erişilebilir Endpointler
+                                                        <small class="text-muted" id="selectedCount">0 seçildi</small>
+                                                    </label>
+                                                    <input type="text" id="endpointSearch" class="form-control form-control-sm mb-2" placeholder="Endpoint ara (örn: Roles)...">
+
+                                                    <div id="endpointList" class="p-0 border rounded bg-white" style="max-height: 350px; overflow-y: auto;">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                                            <button type="button" class="btn btn-primary" onclick="saveRolePermissions()">Değişiklikleri Kaydet</button>
+                                            <button type="button" class="btn btn-primary" onclick="saveRoleEndpoints()">Erişim Yetkilerini Kaydet</button>
                                         </div>
                                     </div>
                                 </div>

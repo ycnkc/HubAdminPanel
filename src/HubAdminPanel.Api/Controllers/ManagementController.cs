@@ -1,5 +1,7 @@
 ﻿using HubAdminPanel.Core.Entities;
+using HubAdminPanel.Core.Features.Management.Queries;
 using HubAdminPanel.Data;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,43 +14,20 @@ namespace HubAdminPanel.Api.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
+        private readonly IMediator _mediator;
 
-        public ManagementController(AppDbContext context, IMemoryCache cache)
+        public ManagementController(AppDbContext context, IMemoryCache cache, IMediator mediator)
         {
             _context = context;
             _cache = cache;
+            _mediator = mediator;
         }
 
         [HttpGet("endpoints")]
         public async Task<IActionResult> GetEndpoints()
         {
-            try
-            {
-                var endpoints = await _context.Endpoints
-                    .Include(e => e.EndpointRoleMappings)
-                        .ThenInclude(m => m.Role)
-                    .AsNoTracking()
-                    .Select(e => new {
-                        e.Id,
-                        e.Path,
-                        e.Method,
-                        e.Description,
-                        EndpointRoleMappings = e.EndpointRoleMappings.Select(m => new {
-                            m.RoleId,
-                            Role = new
-                            {
-                                Name = m.Role.Name
-                            }
-                        }).ToList()
-                    })
-                    .ToListAsync();
-
-                return Ok(endpoints);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var result = await _mediator.Send(new GetEndpointsQuery());
+            return Ok(result);
         }
 
         [HttpGet("search")]
@@ -100,10 +79,11 @@ namespace HubAdminPanel.Api.Controllers
             _context.EndpointRoleMappings.Remove(mapping);
             await _context.SaveChangesAsync();
 
-            // Cache'i sil ki kullanıcının yetkisi anında düşsün!
             _cache.Remove("AllEndpoints");
 
             return Ok(new { message = "Rol eşleşmesi başarıyla silindi." });
         }
+
+
     }
 }

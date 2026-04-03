@@ -2,6 +2,7 @@
 using HubAdminPanel.Core.Features.Roles.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HubAdminPanel.Api.Controllers
 {
@@ -10,8 +11,13 @@ namespace HubAdminPanel.Api.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IMemoryCache _cache;
 
-        public RolesController(IMediator mediator) => _mediator = mediator;
+        public RolesController(IMediator mediator, IMemoryCache cache)
+        {
+            _mediator = mediator;
+            _cache = cache;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetRoles()
@@ -20,10 +26,20 @@ namespace HubAdminPanel.Api.Controllers
             return Ok(roles);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await _mediator.Send(new GetRoleByIdQuery(id));
+            return result != null ? Ok(result) : NotFound();
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleCommand command)
         {
             var roleId = await _mediator.Send(command);
+
+            _cache.Remove("AllEndpoints");
+
             return Ok(roleId);
         }
 
@@ -33,14 +49,27 @@ namespace HubAdminPanel.Api.Controllers
             if (id != command.Id) return BadRequest("ID uyuşmazlığı.");
 
             var result = await _mediator.Send(command);
-            return result ? Ok() : NotFound();
+
+            if (result)
+            {
+                _cache.Remove("AllEndpoints");
+                return Ok();
+            }
+
+            return NotFound();
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRole(int id)
         {
-            var result = await _mediator.Send(new GetRoleByIdQuery(id));
-            return Ok(result);
+            var result = await _mediator.Send(new DeleteRoleCommand(id));
+
+            if (!result)
+                return NotFound(new { message = "Rol bulunamadı." });
+
+            _cache.Remove("AllEndpoints");
+
+            return Ok();
         }
     }
 }

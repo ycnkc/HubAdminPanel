@@ -1,4 +1,6 @@
-﻿namespace HubAdminPanel.Core.Entities
+﻿using HubAdminPanel.Core.DTOs;
+
+namespace HubAdminPanel.Core.Entities
 {
     /// <summary>
     /// Represents a security role within the system.

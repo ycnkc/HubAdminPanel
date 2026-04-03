@@ -113,8 +113,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var discoveryService = scope.ServiceProvider.GetRequiredService<EndpointService>();
-    await discoveryService.DiscoverEndpointsAsync();
+    var service = scope.ServiceProvider.GetRequiredService<EndpointService>();
+    await service.DiscoverEndpointsAsync();
 }
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

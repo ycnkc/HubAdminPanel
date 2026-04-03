@@ -11,6 +11,6 @@ namespace HubAdminPanel.Core.Features.Roles.Commands
     {
         public int Id { get; set; } 
         public string Name { get; set; }
-        public List<int> PermissionIds { get; set; }
+        public List<int> EndpointIds { get; set; }
     }
 }

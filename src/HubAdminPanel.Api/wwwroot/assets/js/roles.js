@@ -1,7 +1,6 @@
 ﻿/**
- * HubAdminPanel - Roles Management (Materio Version)
+ * HubAdminPanel - Roles Management (Endpoint Based - Materio Version)
  */
-let allPermissions = [];
 const roleModalElement = document.getElementById('roleModal');
 let roleModal;
 
@@ -9,52 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (roleModalElement) {
         roleModal = new bootstrap.Modal(roleModalElement);
     }
-
     fetchRoles();
-    loadPermissions();
 });
-
-async function prepareEdit(id, name) {
-    const idField = document.getElementById('roleIdInput');
-    const nameField = document.getElementById('roleNameInput');
-
-    if (idField) idField.value = id;
-    if (nameField) nameField.value = name;
-
-    try {
-        const response = await api.get(`/Roles/${id}`);
-        const roleData = response.data || response;
-
-        const currentPerms = roleData.rolePermissions || roleData.permissions || [];
-        const currentIds = currentPerms.map(p => p.permissionId || p.id || p.Id);
-
-        console.log("Seçili gelmesi gereken ID'ler:", currentIds);
-
-        await loadPermissions(currentIds);
-
-        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('roleModal'));
-        modal.show();
-
-    } catch (error) {
-        console.error("Hata:", error);
-    }
-}
 
 async function fetchRoles() {
     try {
-        console.log("Roller getiriliyor...");
         const response = await api.get('/Roles');
-
         const roles = Array.isArray(response) ? response : (response.data || []);
 
         const tbody = document.getElementById('roleTableBody');
         const totalRolesElem = document.getElementById('totalRoles');
 
-        if (!tbody) {
-            console.error("HATA: 'roleTableBody' ID'li element HTML içinde bulunamadı!");
-            return;
-        }
-
+        if (!tbody) return;
         if (totalRolesElem) totalRolesElem.innerText = roles.length;
 
         if (roles.length === 0) {
@@ -63,112 +28,172 @@ async function fetchRoles() {
         }
 
         tbody.innerHTML = roles.map(role => {
-            const permissions = role.permissions || role.Permissions || [];
+            const mappings = role.endpointRoleMappings || [];
             const roleId = role.id || role.Id;
             const roleName = role.name || role.Name;
 
             return `
-        <tr>
-            <td>
-                <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-3">
-                        <span class="avatar-initial rounded-circle bg-label-primary">
-                            <i class="mdi mdi-shield-outline"></i>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar avatar-sm me-3">
+                                <span class="avatar-initial rounded-circle bg-label-primary">
+                                    <i class="mdi mdi-shield-outline"></i>
+                                </span>
+                            </div>
+                            <span class="fw-semibold">${roleName}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-label-info">
+                            ${mappings.length} Endpoint Erişimi
                         </span>
-                    </div>
-                    <span class="fw-semibold">${roleName}</span>
-                </div>
-            </td>
-            <td>
-                <span class="badge bg-label-info">
-                    ${permissions.length} Yetki
-                </span>
-            </td>
-            <td>
-                <div class="d-flex align-items-center">
-                    <span class="badge badge-dot bg-success me-1"></span>
-                    <small>Aktif</small>
-                </div>
-            </td>
-            <td>
-                <div class="dropdown">
-                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-dots-vertical mdi-24px"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="javascript:void(0);"
-                            onclick="prepareEdit(${roleId}, '${roleName}')">
-                            <i class="mdi mdi-pencil-outline me-1"></i> Düzenle
-                          </a>
-                        <a class="dropdown-item text-danger" href="javascript:void(0);" 
-                           onclick="deleteRole(${roleId})">
-                            <i class="mdi mdi-trash-can-outline me-1"></i> Sil
-                        </a>
-                    </div>
-
-                </div>
-            </td>
-        </tr>
-    `;
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="badge badge-dot bg-success me-1"></span>
+                            <small>Aktif</small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="javascript:void(0);" onclick="prepareEdit(${roleId}, '${roleName}')">
+                                    <i class="mdi mdi-pencil-outline me-1"></i> Düzenle
+                                </a>
+                                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteRole(${roleId})">
+                                    <i class="mdi mdi-trash-can-outline me-1"></i> Sil
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
         }).join('');
 
     } catch (error) {
-        console.error("Rol listesi yüklenirken hata oluştu:", error);
+        console.error("Rol listesi yüklenirken hata:", error);
     }
 }
 
-/**
- * @param {Array} selectedIds
- */
-async function loadPermissions(selectedIds = []) {
-    const container = document.getElementById('permissionList');
-    if (!container) {
-        console.error("Hata: 'permissionList' ID'li element bulunamadı!");
-        return;
-    }
+async function loadEndpoints(selectedIds = []) {
+    const container = document.getElementById('endpointList');
+    const countBadge = document.getElementById('selectedCount');
+    if (!container) return;
 
     try {
-        container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2">Yetkiler yükleniyor...</span></div>';
+        container.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
 
-        const response = await api.get('/Permissions');
+        const response = await api.get('/Management/endpoints');
+        const endpoints = Array.isArray(response) ? response : (response.data || []);
 
-        let permissions = [];
-        if (response && response.data) {
-            permissions = response.data; 
-        } else if (Array.isArray(response)) {
-            permissions = response;
-        }
-
-        if (!permissions || permissions.length === 0) {
-            container.innerHTML = '<div class="alert alert-warning p-2 small">Sistemde tanımlı yetki bulunamadı.</div>';
+        if (endpoints.length === 0) {
+            container.innerHTML = '<div class="alert alert-warning p-2 small">Sistemde kayıtlı endpoint bulunamadı.</div>';
             return;
         }
 
-        container.innerHTML = permissions.map(p => {
-            const pId = p.id;
-            const pName = p.key;
+        const methodColors = {
+            'GET': 'bg-label-success',
+            'POST': 'bg-label-primary',
+            'PUT': 'bg-label-warning',
+            'DELETE': 'bg-label-danger'
+        };
 
-            const isChecked = selectedIds.some(selectedId => {
-                const sId = typeof selectedId === 'object' ? (selectedId.id || selectedId.Id) : selectedId;
-                return String(sId) === String(pId); 
-            }) ? 'checked' : '';
+        let html = `
+            <div class="form-check mb-3 pb-2 ">
+                <input class="form-check-input" type="checkbox" id="selectAllEndpoints">
+                <label class="form-check-label fw-bold" for="selectAllEndpoints">Tümünü Seç / Kaldır</label>
+            </div>
+        `;
+
+        html += endpoints.map(ep => {
+            const isChecked = selectedIds.includes(ep.id || ep.Id) ? 'checked' : '';
+            const badgeClass = methodColors[ep.method] || 'bg-label-secondary';
 
             return `
-                <div class="d-flex justify-content-between align-items-center border-bottom py-2 px-1">
-                    <label class="form-check-label fw-medium mb-0" for="perm${pId}" style="cursor:pointer;">
-                        ${pName}
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2 px-1 endpoint-item">
+                    <label class="form-check-label fw-medium mb-0" for="ep${ep.id}" style="cursor:pointer;">
+                        <span class="badge ${badgeClass} me-2" style="width: 60px;">${ep.method}</span>
+                        <span class="text-dark">${ep.path}</span>
+                        <div class="small text-muted italic" style="font-size: 0.75rem;">${ep.description || ''}</div>
                     </label>
                     <div class="form-check mb-0">
-                        <input class="form-check-input perm-cb" type="checkbox" 
-                               value="${pId}" id="perm${pId}" ${isChecked} />
+                        <input class="form-check-input endpoint-cb" type="checkbox" value="${ep.id}" id="ep${ep.id}" ${isChecked} />
                     </div>
-
                 </div>`;
         }).join('');
 
+        container.innerHTML = html;
+
+        setupEndpointListeners();
+        updateSelectedCount();
+
     } catch (error) {
-        console.error("Yetki yükleme hatası:", error);
-        container.innerHTML = '<div class="alert alert-danger p-2 small">Yetki servisiyle bağlantı kurulamadı!</div>';
+        container.innerHTML = '<div class="alert alert-danger p-2 small">Endpoint yüklenemedi.</div>';
+    }
+}
+
+function setupEndpointListeners() {
+    const searchInput = document.getElementById('endpointSearch');
+    const selectAll = document.getElementById('selectAllEndpoints');
+    const checkboxes = document.querySelectorAll('.endpoint-cb');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.endpoint-item');
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.classList.remove('d-none'); 
+                    item.classList.add('d-flex');
+                } else {
+                    item.classList.remove('d-flex');  
+                    item.classList.add('d-none');
+                }
+            });
+        });
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateSelectedCount);
+    });
+
+    if (selectAll) {
+        selectAll.addEventListener('change', (e) => {
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
+            updateSelectedCount();
+        });
+    }
+}
+function updateSelectedCount() {
+    const count = document.querySelectorAll('.endpoint-cb:checked').length;
+    const badge = document.getElementById('selectedCount');
+    if (badge) {
+        badge.innerText = `${count} endpoint seçildi`;
+        badge.classList.toggle('text-primary', count > 0);
+        badge.classList.toggle('fw-bold', count > 0);
+    }
+}
+async function prepareEdit(id, name) {
+    document.getElementById('roleIdInput').value = id;
+    document.getElementById('roleNameInput').value = name;
+    document.getElementById('modalTitle').innerText = 'Rolü Düzenle';
+
+    try {
+        const response = await api.get(`/Roles/${id}`);
+        const roleData = response.data || response;
+
+        const currentMappings = roleData.endpointRoleMappings || [];
+        const currentIds = currentMappings.map(m => m.endpointId || m.EndpointId);
+
+        await loadEndpoints(currentIds);
+        roleModal.show();
+    } catch (error) {
+        console.error("Veri çekme hatası:", error);
     }
 }
 
@@ -176,75 +201,61 @@ function openAddRoleModal() {
     document.getElementById('roleIdInput').value = '';
     document.getElementById('roleNameInput').value = '';
     document.getElementById('modalTitle').innerText = 'Yeni Rol Oluştur';
-
-    loadPermissions([]);
+    loadEndpoints([]);
     roleModal.show();
 }
 
-
-async function deleteRole(id) {
-    const result = await Swal.fire({
-        title: 'Emin misiniz?',
-        text: "Bu rolü sildiğinizde geri alamazsınız!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Evet, sil!',
-        cancelButtonText: 'İptal',
-        customClass: {
-            confirmButton: 'btn btn-danger me-3',
-            cancelButton: 'btn btn-label-secondary'
-        },
-        buttonsStyling: false
-    });
-
-    if (result.isConfirmed) {
-        try {
-            await api.delete(`/Roles/${id}`);
-            Swal.fire('Silindi!', 'Rol başarıyla silindi.', 'success');
-            fetchRoles(); 
-        } catch (error) {
-            Swal.fire('Hata', 'Silme işlemi başarısız oldu.', 'error');
-        }
-    }
-}
-
-async function saveRolePermissions() {
+async function saveRoleEndpoints() {
     const roleId = document.getElementById('roleIdInput').value;
-    const roleName = document.getElementById('roleNameInput').value;
-    const selectedCheckboxes = document.querySelectorAll('.perm-cb:checked');
-    const permissionIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.value));
+    const roleName = document.getElementById('roleNameInput').value.trim();
+    const selectedCheckboxes = document.querySelectorAll('.endpoint-cb:checked');
+    const endpointIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.value));
 
     if (!roleName) {
         Swal.fire('Uyarı', 'Rol adı boş olamaz!', 'warning');
         return;
     }
 
-    const updateDto = {
-        id: parseInt(roleId),
+    const payload = {
+        id: roleId ? parseInt(roleId) : 0,
         name: roleName,
-        permissionIds: permissionIds
+        endpointIds: endpointIds
     };
 
     try {
-        const response = await api.post(`/Roles/${roleId}`, updateDto);
-
-        Swal.fire({
-            title: 'Başarılı!',
-            text: 'Rol yetkileri başarıyla güncellendi.',
-            icon: 'success',
-            confirmButtonText: 'Tamam',
-            timer: 2000
-        });
-
-        const modalElement = document.getElementById('roleModal');
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        if (modal) modal.hide();
-
-        if (typeof fetchRoles === 'function') {
-            fetchRoles();
+        if (roleId) {
+            await api.put(`/Roles/${roleId}`, payload);
+        } else {
+            await api.post('/Roles/create', payload);
         }
+
+        Swal.fire({ title: 'Başarılı!', text: 'Kaydedildi.', icon: 'success', timer: 1500 });
+        roleModal.hide();
+        fetchRoles();
     } catch (error) {
-        console.error("Güncelleme hatası:", error);
-        Swal.fire('Hata', 'Yetkiler kaydedilirken bir sorun oluştu!', 'error');
+        Swal.fire('Hata', 'İşlem başarısız.', 'error');
+    }
+}
+
+async function deleteRole(id) {
+    const result = await Swal.fire({
+        title: 'Emin misiniz?',
+        text: "Bu rolü sildiğinizde yetki eşleşmeleri de kalkacaktır!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, sil!',
+        cancelButtonText: 'İptal',
+        customClass: { confirmButton: 'btn btn-danger me-3', cancelButton: 'btn btn-label-secondary' },
+        buttonsStyling: false
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await api.delete(`/Roles/${id}`);
+            Swal.fire('Silindi!', 'Başarıyla silindi.', 'success');
+            fetchRoles();
+        } catch (error) {
+            Swal.fire('Hata', 'Silme başarısız.', 'error');
+        }
     }
 }

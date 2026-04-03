@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
 namespace HubAdminPanel.Api.Services
 {
@@ -17,11 +18,15 @@ namespace HubAdminPanel.Api.Services
         public async Task DiscoverEndpointsAsync()
         {
             var controllers = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(type => typeof(ControllerBase).IsAssignableFrom(type));
+                .Where(type => typeof(ControllerBase).IsAssignableFrom(type) && !type.IsAbstract);
 
             foreach (var controller in controllers)
             {
-                var controllerRoute = controller.GetCustomAttribute<RouteAttribute>()?.Template ?? "";
+                var controllerName = controller.Name.Replace("Controller", "");
+                var controllerRouteAttr = controller.GetCustomAttribute<RouteAttribute>();
+                var controllerRoute = controllerRouteAttr?.Template ?? "";
+
+                controllerRoute = controllerRoute.Replace("[controller]", controllerName);
 
                 var methods = controller.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
                     .Where(m => m.GetCustomAttributes<HttpMethodAttribute>().Any());
@@ -29,24 +34,39 @@ namespace HubAdminPanel.Api.Services
                 foreach (var method in methods)
                 {
                     var httpMethodAttr = method.GetCustomAttribute<HttpMethodAttribute>();
-                    var methodRoute = method.GetCustomAttribute<RouteAttribute>()?.Template ?? "";
+                    var methodRoute = httpMethodAttr?.Template ?? method.GetCustomAttribute<RouteAttribute>()?.Template ?? "";
 
-                    var fullPath = $"/{controllerRoute}/{methodRoute}".Replace("//", "/").TrimEnd('/');
-                    var httpMethod = httpMethodAttr?.HttpMethods.First() ?? "GET";
+                    methodRoute = methodRoute.Replace("[action]", method.Name);
 
-                    var exists = _context.Endpoints.Any(e => e.Path == fullPath && e.Method == httpMethod);
+                    var combinedPath = (controllerRoute + "/" + methodRoute).Replace("//", "/").Trim('/');
+                    var fullPath = $"/{combinedPath}".ToLowerInvariant();
+                    var httpMethod = httpMethodAttr?.HttpMethods.FirstOrDefault()?.ToUpperInvariant() ?? "GET";
 
-                    if (!exists)
+                    var existingEndpoint = await _context.Endpoints
+                        .FirstOrDefaultAsync(e => e.Path.ToLower() == fullPath && e.Method.ToUpper() == httpMethod);
+
+                    if (existingEndpoint == null)
                     {
                         _context.Endpoints.Add(new Core.Entities.Endpoint
                         {
                             Path = fullPath,
                             Method = httpMethod,
-                            Description = $"{controller.Name.Replace("Controller", "")} - {method.Name}"
+                            ControllerName = controllerName,
+                            Description = $"{controllerName} - {method.Name}"
                         });
+                    }
+                    else
+                    {
+                        existingEndpoint.ControllerName = controllerName;
+                        existingEndpoint.Description = $"{controllerName} - {method.Name}";
+                        existingEndpoint.Path = fullPath;
+                        existingEndpoint.Method = httpMethod;
+
+                        _context.Endpoints.Update(existingEndpoint);
                     }
                 }
             }
+
             await _context.SaveChangesAsync();
         }
     }

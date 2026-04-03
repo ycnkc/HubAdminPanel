@@ -12,14 +12,24 @@ namespace HubAdminPanel.Core.Features.Roles.Queries
 
         public async Task<List<RoleDto>> Handle(GetAllRolesQuery request, CancellationToken cancellationToken)
         {
-
-            return await _context.Roles
-                .Select(r => new RoleDto 
-                {
-                    Id = r.Id, 
-                    Name = r.Name             
-                })
+            var rolesFromDb = await _context.Roles
+                .Include(r => r.EndpointRoleMappings)
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
+
+            var result = rolesFromDb.Select(r => new RoleDto
+            {
+                Id = r.Id,
+                Name = r.Name ?? "İsimsiz",
+                EndpointRoleMappings = r.EndpointRoleMappings?
+                    .Select(m => new EndpointRoleMappingDto
+                    {
+                        EndpointId = m.EndpointId,
+                        RoleId = m.RoleId
+                    }).ToList() ?? new List<EndpointRoleMappingDto>()
+            }).ToList();
+
+            return result;
         }
     }
 }
