@@ -1,27 +1,29 @@
-﻿// 1. Session and Token control
+﻿// Session, Token and Role control
 const checkAuth = () => {
     const token = localStorage.getItem('accessToken');
+    const userRole = localStorage.getItem('userRole'); // Login anında kaydettiğin rol
+
     if (!token) {
-        console.warn("Yetkisiz erişim: Login sayfasına yönlendiriliyor...");
+        console.warn("Oturum bulunamadı: Login sayfasına yönlendiriliyor...");
         window.location.href = 'login.html';
         return null;
     }
+
+    if (userRole !== 'Admin') {
+        console.error("Yetkisiz erişim denemesi: Sadece Admin girişi yapabilir.");
+
+        localStorage.clear();
+        alert("Bu panele erişim yetkiniz bulunmamaktadır.");
+        window.location.href = 'login.html';
+        return null;
+    }
+
     return token;
 };
 
-function checkUIByPermissions() {
-    const userPermissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
-
-    const userRole = localStorage.getItem('userRole');
-    if (userRole === 'Admin') return;
-
-    document.querySelectorAll('.btn-perm').forEach(el => {
-        const required = el.getAttribute('data-permission');
-        if (!userPermissions.includes(required)) {
-            el.style.display = 'none';
-        }
-    });
-}
+(function () {
+    checkAuth();
+})();
 
 function logout() {
     Swal.fire({

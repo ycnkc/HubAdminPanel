@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/assets/css/dark-theme.css" />
     <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -79,13 +80,22 @@
                     const { accessToken } = response.data;
 
                     if (accessToken) {
-                        localStorage.setItem('accessToken', accessToken);
-
-                        // Token Çözümleme
                         const decoded = jwt_decode(accessToken);
+
                         const name = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || decoded.unique_name || decoded.sub;
                         const role = decoded["http://schemas.xmlsoap.org/ws/2008/06/identity/claims/role"] || decoded.role;
 
+                        if (role !== 'Admin') {
+                            Swal.fire({
+                                title: 'Erişim Engellendi',
+                                text: 'Bu sisteme sadece yöneticiler giriş yapabilir.',
+                                icon: 'error',
+                                confirmButtonColor: '#696cff'
+                            });
+                            return; 
+                        }
+
+                        localStorage.setItem('accessToken', accessToken);
                         localStorage.setItem('username', name);
                         localStorage.setItem('userRole', role);
 
@@ -93,7 +103,14 @@
                     }
                 } catch (error) {
                     console.error("Hata:", error);
-                    alert("Giriş bilgileri hatalı veya sunucuya ulaşılamıyor.");
+                    const errorMsg = error.response?.data || "Giriş bilgileri hatalı veya yetkiniz bulunmuyor.";
+
+                    Swal.fire({
+                        title: 'Hata!',
+                        text: errorMsg,
+                        icon: 'error',
+                        confirmButtonColor: '#696cff'
+                    });
                 }
             });
         });

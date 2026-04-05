@@ -52,6 +52,13 @@ namespace HubAdminPanel.Core.Features.Auth.Commands
                 throw new Exception("Hesabınız dondurulmuştur. Lütfen admin ile iletişime geçin.");
             }
 
+            var isAdmin = user.UserRoles.Any(ur => ur.Role.Name == "Admin");
+            if (isAdmin)
+            {
+                throw new UnauthorizedAccessException("Bu sistemem giriş yetkiniz bulunmamaktadır.");
+            }
+
+
             var accessToken = _tokenService.CreateToken(user);
 
             var refreshToken = _tokenService.CreateRefreshToken();

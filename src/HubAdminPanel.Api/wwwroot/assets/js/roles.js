@@ -46,12 +46,7 @@ async function fetchRoles() {
                             ${mappings.length} Endpoint Erişimi
                         </span>
                     </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <span class="badge badge-dot bg-success me-1"></span>
-                            <small>Aktif</small>
-                        </div>
-                    </td>
+                    
                     <td>
                         <div class="dropdown">
                             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
