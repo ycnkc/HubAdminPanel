@@ -8,19 +8,37 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchRoles();
 });
 
-async function fetchRoles() {
+async function fetchRoles(page = 1) {
     try {
-        const response = await api.get('/Roles');
-        const roles = Array.isArray(response) ? response : (response.data || []);
+        const response = await api.get('/Roles', {
+            params: {
+                pageNumber: page,
+                pageSize: PaginationManager.pageSize
+            }
+        });
+        
+        const responseData = response.data || response;
+        let roles = [];
+        let totalCount = 0;
+
+        if (Array.isArray(responseData)) {
+            totalCount = responseData.length;
+            const startIndex = (page - 1) * PaginationManager.pageSize;
+            roles = responseData.slice(startIndex, startIndex + PaginationManager.pageSize);
+        } else {
+            roles = responseData.items || responseData.Items || [];
+            totalCount = responseData.totalCount || responseData.TotalCount || 0;
+        }
 
         const tbody = document.getElementById('roleTableBody');
         const totalRolesElem = document.getElementById('totalRoles');
 
         if (!tbody) return;
-        if (totalRolesElem) totalRolesElem.innerText = roles.length;
+        if (totalRolesElem) totalRolesElem.innerText = totalCount;
 
         if (roles.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4">Henüz hiç rol tanımlanmamış.</td></tr>';
+            PaginationManager.update({ totalCount: 0, pageNumber: page, pageSize: PaginationManager.pageSize }, fetchRoles);
             return;
         }
 
@@ -64,6 +82,12 @@ async function fetchRoles() {
                     </td>
                 </tr>`;
         }).join('');
+
+        PaginationManager.update({
+            totalCount: totalCount,
+            pageNumber: page,
+            pageSize: PaginationManager.pageSize
+        }, fetchRoles);
 
     } catch (error) {
         console.error("Rol listesi yüklenirken hata:", error);
