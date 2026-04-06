@@ -111,13 +111,18 @@ namespace HubAdminPanel.Api.Controllers
 
                 if (dto.UserIds == null || dto.UserIds.Count == 0)
                 {
-                    users = await _context.Users.ToListAsync();
+                    var query = _context.Users.AsQueryable();
+
+                    if (dto.ExcludedIds != null && dto.ExcludedIds.Any())
+                    {
+                        query = query.Where(u => !dto.ExcludedIds.Contains(u.Id));
+                    }
+
+                    users = await query.ToListAsync();
                 }
                 else
                 {
-                    users = await _context.Users
-                        .Where(u => dto.UserIds.Contains(u.Id))
-                        .ToListAsync();
+                    users = await _context.Users.Where(u => dto.UserIds.Contains(u.Id)).ToListAsync();
                 }
 
                 int successCount = 0;

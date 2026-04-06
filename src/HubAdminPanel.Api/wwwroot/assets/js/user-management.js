@@ -2,14 +2,17 @@
 let searchTerm = "";
 let searchTimeout;
 let currentPage = 1;
-let isSelectAllActive = false; 
+let isSelectAllPagesActive = false;
+let selectedUserIds = new Set();
+let excludedUserIds = new Set();
+let emailModal = null;
 
 const renderUserTable = (users) => {
     const tableBody = document.getElementById('userTableBody');
     if (!tableBody) return;
 
     if (users.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Sistemde kullanıcı bulunamadı.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Sistemde kullanıcı bulunamadı.</td></tr>';
         return;
     }
 
@@ -19,11 +22,18 @@ const renderUserTable = (users) => {
         const username = user.username || user.Username || 'İsimsiz';
         const roles = user.roles?.length > 0 ? user.roles.join(', ') : 'Rol Atanmamış';
 
+        let isChecked = '';
+        if (isSelectAllPagesActive) {
+            isChecked = excludedUserIds.has(userId) ? '' : 'checked';
+        } else {
+            isChecked = selectedUserIds.has(userId) ? 'checked' : '';
+        }
+
         return `
             <tr>
                 <td>
                 <div class="form-check">
-                    <input class="form-check-input user-cb" type="checkbox" value="${user.id}">
+                    <input class="form-check-input user-cb" type="checkbox" value="${userId}" ${isChecked} onchange="handleCbChange(this)">
                 </div>
                 </td>
                 <td>
@@ -38,24 +48,17 @@ const renderUserTable = (users) => {
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-2 btn-perm" 
-                            data-roles="Admin" 
-                            onclick="openEditModal(${userId})">
+                    <button class="btn btn-sm btn-outline-primary me-2 btn-perm" data-roles="Admin" onclick="openEditModal(${userId})">
                         <i class="ri-edit-box-line"></i> Düzenle
                     </button>
-                    
-                    <button class="btn btn-sm btn-danger btn-perm" 
-                            data-roles="Admin" 
-                            onclick="deleteUser(${userId})">
+                    <button class="btn btn-sm btn-danger btn-perm" data-roles="Admin" onclick="deleteUser(${userId})">
                         <i class="ri-delete-bin-line"></i> Sil
                     </button>
                 </td>
             </tr>`;
     }).join('');
 
-    if (typeof checkUIByRoles === 'function') {
-        checkUIByRoles();
-    }
+    if (typeof checkUIByRoles === 'function') checkUIByRoles();
 };
 
 async function handleSearch(event) {
@@ -72,6 +75,7 @@ window.applyFilters = function () {
 document.addEventListener('DOMContentLoaded', async () => {
     if (!checkAuth()) return;
     await fetchRoles();
+    fetchEndpointsForModal();
 
     const nameEl = document.getElementById('navUserName');
     const roleEl = document.getElementById('navUserRole');
@@ -84,7 +88,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             clearTimeout(searchTimeout);
             searchTerm = e.target.value;
             searchTimeout = setTimeout(() => {
-                console.log("Arama yapılıyor:", searchTerm);
                 fetchUsers(1);
             }, 500);
         });
@@ -171,9 +174,6 @@ function openEditModal(userId) {
     const roleSelect = document.getElementById('editUserRole');
     if (roleSelect) {
         const rId = user.roleId || user.RoleId;
-        console.log("Düzenlenen Kullanıcı Rol ID:", rId);
-        console.log("Select İçindeki Mevcut Opsiyonlar:", roleSelect.innerHTML);
-
         if (rId) {
             roleSelect.value = rId.toString();
         }
@@ -239,6 +239,23 @@ function renderPagination(data) {
     }
 }
 
+function handleCbChange(cb) {
+    const id = parseInt(cb.value);
+
+    if (isSelectAllPagesActive) {
+        if (!cb.checked) {
+            excludedUserIds.add(id);
+            document.getElementById('selectAllUsers').checked = false; 
+        } else {
+            excludedUserIds.delete(id); 
+            if (excludedUserIds.size === 0) document.getElementById('selectAllUsers').checked = true;
+        }
+    } else {
+        if (cb.checked) selectedUserIds.add(id);
+        else selectedUserIds.delete(id);
+    }
+}
+
 async function fetchUsers(page = 1) {
     const status = document.getElementById('filterStatus').value;
     const roleId = document.getElementById('filterRole').value;
@@ -275,7 +292,6 @@ async function fetchUsers(page = 1) {
 }
 
 function handleApiError(error) {
-    console.error("API Hatası:", error);
     if (error.response?.status === 401) {
         alert("Oturum süreniz dolmuş.");
         window.location.href = 'login.html';
@@ -284,7 +300,7 @@ function handleApiError(error) {
     }
 }
 
-let modalEndpoints = []; 
+let modalEndpoints = [];
 async function fetchEndpointsForModal() {
     try {
         const response = await api.get('/Management/endpoints');
@@ -361,32 +377,29 @@ async function createNewRole() {
 }
 
 function toggleAllUsers(masterCheckbox) {
-    const userCheckboxes = document.querySelectorAll('.user-cb');
-
     isSelectAllPagesActive = masterCheckbox.checked;
+    excludedUserIds.clear();
+    selectedUserIds.clear();
 
-    userCheckboxes.forEach(cb => {
+    document.querySelectorAll('.user-cb').forEach(cb => {
         cb.checked = isSelectAllPagesActive;
     });
-
-    if (isSelectAllPagesActive) {
-        console.log("Tüm sayfalardaki kullanıcılar seçildi (Backend'e sinyal gidecek).");
-    }
 }
 
-let emailModal;
-
 function openEmailModal() {
-    const selectedCbs = document.querySelectorAll('.user-cb:checked');
     const infoArea = document.getElementById('selectedUserCountInfo');
 
     if (isSelectAllPagesActive) {
-        infoArea.innerText = "Sistemdeki tüm kullanıcılara mail gönderilecek.";
-        infoArea.classList.replace('alert-warning', 'alert-info'); 
-    } 
+        if (excludedUserIds.size > 0) {
+            infoArea.innerText = `Sistemdeki tüm kullanıcılara (${excludedUserIds.size} kişi hariç) mail gönderilecek.`;
+        } else {
+            infoArea.innerText = "Sistemdeki tüm kullanıcılara mail gönderilecek.";
+        }
+        infoArea.classList.replace('alert-warning', 'alert-info');
+    } else {
+        document.querySelectorAll('.user-cb:checked').forEach(cb => selectedUserIds.add(parseInt(cb.value)));
 
-    else {
-        const count = selectedCbs.length;
+        const count = selectedUserIds.size;
         if (count === 0) {
             Swal.fire('Uyarı', 'Lütfen mail gönderilecek kullanıcıları seçin.', 'warning');
             return;
@@ -401,22 +414,26 @@ function openEmailModal() {
 
 async function sendBulkEmail() {
     let userIds = [];
+    let excludedIds = [];
 
     if (isSelectAllPagesActive) {
         userIds = null;
+        excludedIds = Array.from(excludedUserIds);
     } else {
-        userIds = Array.from(document.querySelectorAll('.user-cb:checked')).map(cb => parseInt(cb.value));
+        document.querySelectorAll('.user-cb:checked').forEach(cb => selectedUserIds.add(parseInt(cb.value)));
+        userIds = Array.from(selectedUserIds);
     }
 
     const subject = document.getElementById('emailSubject').value;
     const body = document.getElementById('emailContent').value;
 
     if (!subject || !body) {
-        if (!isSelectAllPagesActive && (!userIds || userIds.length === 0)) {
-            Swal.fire('Hata', 'Lütfen kullanıcı seçin.', 'error');
-            return;
-        }
         Swal.fire('Hata', 'Konu ve içerik boş olamaz.', 'error');
+        return;
+    }
+
+    if (!isSelectAllPagesActive && userIds.length === 0) {
+        Swal.fire('Hata', 'Lütfen kullanıcı seçin.', 'error');
         return;
     }
 
@@ -424,7 +441,8 @@ async function sendBulkEmail() {
         Swal.fire({ title: 'Gönderiliyor...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         const response = await api.post('/Management/send-bulk-email', {
-            userIds: userIds, 
+            userIds: userIds,
+            excludedIds: excludedIds, 
             subject: subject,
             content: body
         });
@@ -432,6 +450,8 @@ async function sendBulkEmail() {
         Swal.fire('Başarılı!', response.data.message, 'success');
 
         isSelectAllPagesActive = false;
+        excludedUserIds.clear();
+        selectedUserIds.clear();
         document.getElementById('selectAllUsers').checked = false;
         document.querySelectorAll('.user-cb').forEach(cb => cb.checked = false);
 
@@ -440,7 +460,6 @@ async function sendBulkEmail() {
         Swal.fire('Hata', 'İşlem başarısız.', 'error');
     }
 }
-
 const emailTemplates = {
     welcome: "Merhaba {name},\n\nSistemimize hoş geldiniz! Hesabınız başarıyla oluşturulmuştur. Panel üzerinden işlemlerinizi takip edebilirsiniz.\n\nİyi çalışmalar.",
     update: "Değerli Kullanıcımız {name},\n\nSistemimizde bu gece 00:00 - 04:00 saatleri arasında bakım çalışması yapılacaktır. Bilginize sunarız.",
@@ -462,9 +481,3 @@ function onTemplateChange() {
         if (selectedKey === 'security') subjectInput.value = "Güvenlik Uyarısı!";
     }
 }
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    fetchEndpointsForModal();
-});
