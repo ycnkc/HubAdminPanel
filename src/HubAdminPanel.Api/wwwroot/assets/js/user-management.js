@@ -2,6 +2,7 @@
 let searchTerm = "";
 let searchTimeout;
 let currentPage = 1;
+let isSelectAllActive = false; 
 
 const renderUserTable = (users) => {
     const tableBody = document.getElementById('userTableBody');
@@ -359,42 +360,63 @@ async function createNewRole() {
     }
 }
 
-function toggleSelectAll(mainCheckbox) {
-    const checkboxes = document.querySelectorAll('.endpoint-checkbox');
-    
-    checkboxes.forEach(cb => {
-        const parentItem = cb.closest('.endpoint-item');
-        if (parentItem && !parentItem.classList.contains('d-none')) {
-            cb.checked = mainCheckbox.checked;
-        }
+function toggleAllUsers(masterCheckbox) {
+    const userCheckboxes = document.querySelectorAll('.user-cb');
+
+    isSelectAllPagesActive = masterCheckbox.checked;
+
+    userCheckboxes.forEach(cb => {
+        cb.checked = isSelectAllPagesActive;
     });
+
+    if (isSelectAllPagesActive) {
+        console.log("Tüm sayfalardaki kullanıcılar seçildi (Backend'e sinyal gidecek).");
+    }
 }
 
 let emailModal;
 
 function openEmailModal() {
     const selectedCbs = document.querySelectorAll('.user-cb:checked');
-    const userIds = Array.from(selectedCbs).map(cb => cb.value);
+    const infoArea = document.getElementById('selectedUserCountInfo');
 
-    if (userIds.length === 0) {
-        Swal.fire('Uyarı', 'Lütfen mail gönderilecek kullanıcıları seçin.', 'warning');
-        return;
+    if (isSelectAllPagesActive) {
+        infoArea.innerText = "Sistemdeki tüm kullanıcılara mail gönderilecek.";
+        infoArea.classList.replace('alert-warning', 'alert-info'); 
+    } 
+
+    else {
+        const count = selectedCbs.length;
+        if (count === 0) {
+            Swal.fire('Uyarı', 'Lütfen mail gönderilecek kullanıcıları seçin.', 'warning');
+            return;
+        }
+        infoArea.innerText = `${count} kullanıcıya mail gönderilecek.`;
+        infoArea.classList.replace('alert-warning', 'alert-info');
     }
-
-    document.getElementById('selectedUserCountInfo').innerText = `${userIds.length} kullanıcıya mail gönderilecek.`;
 
     if (!emailModal) emailModal = new bootstrap.Modal(document.getElementById('sendEmailModal'));
     emailModal.show();
 }
 
 async function sendBulkEmail() {
-    const userIds = Array.from(document.querySelectorAll('.user-cb:checked')).map(cb => parseInt(cb.value));
+    let userIds = [];
+
+    if (isSelectAllPagesActive) {
+        userIds = null;
+    } else {
+        userIds = Array.from(document.querySelectorAll('.user-cb:checked')).map(cb => parseInt(cb.value));
+    }
 
     const subject = document.getElementById('emailSubject').value;
-    const body = document.getElementById('emailContent').value; 
+    const body = document.getElementById('emailContent').value;
 
     if (!subject || !body) {
-        Swal.fire('Hata', 'Lütfen konu ve mesaj içeriğini doldurun.', 'error');
+        if (!isSelectAllPagesActive && (!userIds || userIds.length === 0)) {
+            Swal.fire('Hata', 'Lütfen kullanıcı seçin.', 'error');
+            return;
+        }
+        Swal.fire('Hata', 'Konu ve içerik boş olamaz.', 'error');
         return;
     }
 
@@ -402,21 +424,20 @@ async function sendBulkEmail() {
         Swal.fire({ title: 'Gönderiliyor...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         const response = await api.post('/Management/send-bulk-email', {
-            userIds: userIds,
+            userIds: userIds, 
             subject: subject,
-            content: body 
+            content: body
         });
 
-        Swal.fire('Başarılı!', 'E-postalar başarıyla gönderildi.', 'success');
+        Swal.fire('Başarılı!', response.data.message, 'success');
 
-        if (emailModal) emailModal.hide();
+        isSelectAllPagesActive = false;
+        document.getElementById('selectAllUsers').checked = false;
+        document.querySelectorAll('.user-cb').forEach(cb => cb.checked = false);
 
-        document.querySelectorAll('.user-cb:checked').forEach(cb => cb.checked = false);
-
+        bootstrap.Modal.getInstance(document.getElementById('sendEmailModal')).hide();
     } catch (error) {
-        console.error("Mail hatası:", error);
-        const msg = error.response?.data?.message || error.response?.data || 'Mail gönderimi sırasında bir sorun oluştu.';
-        Swal.fire('Hata', msg, 'error');
+        Swal.fire('Hata', 'İşlem başarısız.', 'error');
     }
 }
 
@@ -441,6 +462,8 @@ function onTemplateChange() {
         if (selectedKey === 'security') subjectInput.value = "Güvenlik Uyarısı!";
     }
 }
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchEndpointsForModal();

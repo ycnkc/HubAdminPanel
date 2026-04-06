@@ -107,23 +107,40 @@ namespace HubAdminPanel.Api.Controllers
         {
             try
             {
-                var users = await _context.Users
-                    .Where(u => dto.UserIds.Contains(u.Id))
-                    .ToListAsync();
+                List<User> users;
 
-                foreach (var user in users)
+                if (dto.UserIds == null || dto.UserIds.Count == 0)
                 {
-                    var personalizedContent = dto.Content.Replace("{name}", user.Username);
-
-                    await _emailService.SendEmailAsync(user.Email, dto.Subject, personalizedContent);
+                    users = await _context.Users.ToListAsync();
+                }
+                else
+                {
+                    users = await _context.Users
+                        .Where(u => dto.UserIds.Contains(u.Id))
+                        .ToListAsync();
                 }
 
-                return Ok(new { message = $"{users.Count} adet e-posta başarıyla gönderildi." });
+                int successCount = 0;
+                foreach (var user in users)
+                {
+                    try
+                    {
+                        var personalizedContent = dto.Content.Replace("{name}", user.Username);
+                        await _emailService.SendEmailAsync(user.Email, dto.Subject, personalizedContent);
+                        successCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Mail gönderilemedi ({user.Email}): {ex.Message}");
+                    }
+                }
+
+                return Ok(new { message = $"{successCount} adet e-posta başarıyla gönderildi." });
             }
             catch (Exception ex)
             {
-                return BadRequest("Mail gönderimi sırasında hata oluştu: " + ex.Message);
+                return BadRequest("İşlem sırasında bir hata oluştu: " + ex.Message);
             }
         }
     }
-}
+    }
