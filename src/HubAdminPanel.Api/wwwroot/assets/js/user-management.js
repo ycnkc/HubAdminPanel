@@ -77,11 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchRoles();
     fetchEndpointsForModal();
 
-    const nameEl = document.getElementById('navUserName');
-    const roleEl = document.getElementById('navUserRole');
-    if (nameEl) nameEl.innerText = localStorage.getItem('username') || 'User';
-    if (roleEl) roleEl.innerText = localStorage.getItem('userRole') || 'Guest';
-
     const searchInput = document.getElementById('userSearchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
