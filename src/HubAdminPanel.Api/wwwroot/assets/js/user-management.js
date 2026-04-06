@@ -21,6 +21,11 @@ const renderUserTable = (users) => {
         return `
             <tr>
                 <td>
+                <div class="form-check">
+                    <input class="form-check-input user-cb" type="checkbox" value="${user.id}">
+                </div>
+                </td>
+                <td>
                     <i class="ri-user-line ri-22px text-primary me-2"></i>
                     <strong>${username}</strong>
                 </td>
@@ -363,6 +368,78 @@ function toggleSelectAll(mainCheckbox) {
             cb.checked = mainCheckbox.checked;
         }
     });
+}
+
+let emailModal;
+
+function openEmailModal() {
+    const selectedCbs = document.querySelectorAll('.user-cb:checked');
+    const userIds = Array.from(selectedCbs).map(cb => cb.value);
+
+    if (userIds.length === 0) {
+        Swal.fire('Uyarı', 'Lütfen mail gönderilecek kullanıcıları seçin.', 'warning');
+        return;
+    }
+
+    document.getElementById('selectedUserCountInfo').innerText = `${userIds.length} kullanıcıya mail gönderilecek.`;
+
+    if (!emailModal) emailModal = new bootstrap.Modal(document.getElementById('sendEmailModal'));
+    emailModal.show();
+}
+
+async function sendBulkEmail() {
+    const userIds = Array.from(document.querySelectorAll('.user-cb:checked')).map(cb => parseInt(cb.value));
+
+    const subject = document.getElementById('emailSubject').value;
+    const body = document.getElementById('emailContent').value; 
+
+    if (!subject || !body) {
+        Swal.fire('Hata', 'Lütfen konu ve mesaj içeriğini doldurun.', 'error');
+        return;
+    }
+
+    try {
+        Swal.fire({ title: 'Gönderiliyor...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        const response = await api.post('/Management/send-bulk-email', {
+            userIds: userIds,
+            subject: subject,
+            content: body 
+        });
+
+        Swal.fire('Başarılı!', 'E-postalar başarıyla gönderildi.', 'success');
+
+        if (emailModal) emailModal.hide();
+
+        document.querySelectorAll('.user-cb:checked').forEach(cb => cb.checked = false);
+
+    } catch (error) {
+        console.error("Mail hatası:", error);
+        const msg = error.response?.data?.message || error.response?.data || 'Mail gönderimi sırasında bir sorun oluştu.';
+        Swal.fire('Hata', msg, 'error');
+    }
+}
+
+const emailTemplates = {
+    welcome: "Merhaba {name},\n\nSistemimize hoş geldiniz! Hesabınız başarıyla oluşturulmuştur. Panel üzerinden işlemlerinizi takip edebilirsiniz.\n\nİyi çalışmalar.",
+    update: "Değerli Kullanıcımız {name},\n\nSistemimizde bu gece 00:00 - 04:00 saatleri arasında bakım çalışması yapılacaktır. Bilginize sunarız.",
+    security: "UYARI: {name},\n\nHesabınızda şüpheli bir giriş denemesi tespit edildi. Eğer bu siz değilseniz lütfen şifrenizi hemen güncelleyin."
+};
+
+function onTemplateChange() {
+    const select = document.getElementById('emailTemplateSelect');
+    const contentArea = document.getElementById('emailContent');
+    const subjectInput = document.getElementById('emailSubject');
+
+    const selectedKey = select.value;
+
+    if (selectedKey && emailTemplates[selectedKey]) {
+        contentArea.value = emailTemplates[selectedKey];
+
+        if (selectedKey === 'welcome') subjectInput.value = "Hoş Geldiniz!";
+        if (selectedKey === 'update') subjectInput.value = "Sistem Güncelleme Duyurusu";
+        if (selectedKey === 'security') subjectInput.value = "Güvenlik Uyarısı!";
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

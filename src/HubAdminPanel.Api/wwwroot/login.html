@@ -85,6 +85,8 @@
                         const name = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || decoded.unique_name || decoded.sub;
                         const role = decoded["http://schemas.xmlsoap.org/ws/2008/06/identity/claims/role"] || decoded.role;
 
+                        console.log("Gelen Rol:", role);
+
                         if (role !== 'Admin') {
                             Swal.fire({
                                 title: 'Erişim Engellendi',

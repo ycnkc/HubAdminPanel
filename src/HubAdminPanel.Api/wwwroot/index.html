@@ -146,7 +146,53 @@
                             <button type="button" class="btn btn-success btn-perm" data-permission="ROLE_MANAGE" data-bs-toggle="modal" data-bs-target="#addRoleModal">
                                 <i class="ri-shield-user-line me-1"></i> Yeni Rol Oluştur
                             </button>
+                            <button type="button" class="btn btn-primary" onclick="openEmailModal()">
+                                <i class="mdi mdi-email-outline me-1"></i> Seçilenlere Mail Gönder
+                            </button>
+                        </div>
 
+                        <div class="modal fade" id="sendEmailModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Toplu Bilgilendirme Düzenle & Gönder</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="alert alert-info py-2 mb-3" id="selectedUserCountInfo"></div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">E-posta Konusu</label>
+                                                <input type="text" id="emailSubject" class="form-control" placeholder="Konu başlığı...">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Hazır Şablon Seç</label>
+                                                <select id="emailTemplateSelect" class="form-select" onchange="onTemplateChange()">
+                                                    <option value="">Manuel Yaz / Şablon Seç...</option>
+                                                    <option value="welcome">Hoş Geldiniz Şablonu</option>
+                                                    <option value="update">Sistem Güncelleme Duyurusu</option>
+                                                    <option value="security">Güvenlik Uyarısı</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Mail İçeriği (Düzenlenebilir)</label>
+                                                <textarea id="emailContent" class="form-control" rows="10"
+                                                          placeholder="Mail içeriğini buraya yazın veya yukarıdan bir şablon seçin..."></textarea>
+                                                <div class="form-text text-muted">
+                                                    İpucu: Kullanıcı adı için <strong>{name}</strong> etiketini kullanabilirsiniz.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="button" class="btn btn-primary" onclick="sendBulkEmail()">
+                                            <i class="mdi mdi-send me-1"></i> Mailleri Gönder
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
@@ -184,13 +230,17 @@
                             </div>
                         </div>
 
+
+
                         <div class="modal fade" id="addRoleModal" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Yeni Rol Ekle</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
                                     </div>
+
                                     <div class="modal-body">
                                         <div class="mb-3">
                                             <label class="form-label">Rol Adı</label>
@@ -307,6 +357,7 @@
                                     <table class="table table-sm">
                                         <thead>
                                             <tr>
+                                                <th class="text-truncate"></th>
                                                 <th class="text-truncate">User</th>
                                                 <th class="text-truncate">Email</th>
                                                 <th class="text-truncate">Role</th>

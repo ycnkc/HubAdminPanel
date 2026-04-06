@@ -1,8 +1,11 @@
-﻿using HubAdminPanel.Core.Entities;
+﻿using HubAdminPanel.Core.DTOs;
+using HubAdminPanel.Core.Entities;
 using HubAdminPanel.Core.Features.Endpoints.Commands;
 using HubAdminPanel.Core.Features.Management.Queries;
+using HubAdminPanel.Core.Interfaces;
 using HubAdminPanel.Data;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -16,12 +19,14 @@ namespace HubAdminPanel.Api.Controllers
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly IMediator _mediator;
+        private readonly IEmailService _emailService;
 
-        public ManagementController(AppDbContext context, IMemoryCache cache, IMediator mediator)
+        public ManagementController(AppDbContext context, IMemoryCache cache, IMediator mediator, IEmailService emailService)
         {
             _context = context;
             _cache = cache;
             _mediator = mediator;
+            _emailService = emailService;
         }
 
         [HttpGet("endpoints")]
@@ -91,11 +96,34 @@ namespace HubAdminPanel.Api.Controllers
             var result = await _mediator.Send(new DeleteEndpointCommand(id));
             if (result)
             {
-                _cache.Remove("AllEndpoints"); 
+                _cache.Remove("AllEndpoints");
                 return Ok();
             }
             return NotFound();
         }
 
+        [HttpPost("send-bulk-email")]
+        public async Task<IActionResult> SendBulkEmail([FromBody] SendBulkEmailDto dto)
+        {
+            try
+            {
+                var users = await _context.Users
+                    .Where(u => dto.UserIds.Contains(u.Id))
+                    .ToListAsync();
+
+                foreach (var user in users)
+                {
+                    var personalizedContent = dto.Content.Replace("{name}", user.Username);
+
+                    await _emailService.SendEmailAsync(user.Email, dto.Subject, personalizedContent);
+                }
+
+                return Ok(new { message = $"{users.Count} adet e-posta başarıyla gönderildi." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Mail gönderimi sırasında hata oluştu: " + ex.Message);
+            }
+        }
     }
 }

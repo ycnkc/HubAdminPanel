@@ -1,9 +1,11 @@
 using HubAdminPanel.Api.Middleware;
 using HubAdminPanel.Api.Services;
+using HubAdminPanel.Core.Entities;
 using HubAdminPanel.Core.Features.Auth.Commands;
 using HubAdminPanel.Core.Features.Roles.Commands;
 using HubAdminPanel.Core.Interfaces;
 using HubAdminPanel.Data;
+using HubAdminPanel.Infrastructure.Services;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,7 +34,8 @@ builder.Services.AddCors(options =>
 });
 
 
-
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
