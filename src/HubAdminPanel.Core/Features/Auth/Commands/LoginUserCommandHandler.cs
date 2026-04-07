@@ -56,7 +56,7 @@ namespace HubAdminPanel.Core.Features.Auth.Commands
             if (isAdmin == false)
             {
                 throw new UnauthorizedAccessException("Bu sisteme giriş yetkiniz bulunmamaktadır.");
-            }
+            } 
 
 
             var accessToken = _tokenService.CreateToken(user);

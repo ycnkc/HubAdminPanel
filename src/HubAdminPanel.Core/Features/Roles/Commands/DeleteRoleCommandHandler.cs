@@ -1,16 +1,19 @@
 ﻿using HubAdminPanel.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HubAdminPanel.Core.Features.Roles.Commands
 {
     public class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, bool>
     {
         private readonly IAppDbContext _context;
+        private readonly IMemoryCache _cache;
 
-        public DeleteRoleCommandHandler(IAppDbContext context)
+        public DeleteRoleCommandHandler(IAppDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         public async Task<bool> Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
@@ -29,6 +32,7 @@ namespace HubAdminPanel.Core.Features.Roles.Commands
             _context.Roles.Remove(role);
 
             await _context.SaveChangesAsync(cancellationToken);
+            _cache.Remove("AllEndpoints");
             return true;
         }
     }

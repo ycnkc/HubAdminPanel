@@ -30,12 +30,6 @@ namespace HubAdminPanel.Api.Middleware
                 return;
             }
 
-            if (path.StartsWithSegments("/api/Auth") || path.StartsWithSegments("/api/Roles"))
-            {
-                await _next(context);
-                return;
-            }
-
             if (context.User.Identity?.IsAuthenticated != true)
             {
                 await _next(context);
@@ -47,7 +41,7 @@ namespace HubAdminPanel.Api.Middleware
 
             var allEndpoints = await _cache.GetOrCreateAsync("AllEndpoints", async entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
                 return await dbContext.Endpoints
                     .Include(e => e.EndpointRoleMappings) 
                         .ThenInclude(m => m.Role)
@@ -98,7 +92,9 @@ namespace HubAdminPanel.Api.Middleware
         {
             var regex = _regexCache.GetOrAdd(template, t =>
             {
-                var pattern = "^" + Regex.Replace(t, "{[a-zA-Z0-9]+}", "[a-zA-Z0-9-]+") + "$";
+                var escaped = Regex.Escape(t);
+
+                var pattern = "^" + Regex.Replace(escaped, "\\{[^/]+\\}", "[^/]+") + "$";
                 return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
             });
 

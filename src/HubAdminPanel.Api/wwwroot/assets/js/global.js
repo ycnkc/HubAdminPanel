@@ -1,5 +1,4 @@
-﻿
-function getInitials(name) {
+﻿function getInitials(name) {
     if (!name) return "U";
     const names = name.trim().split(' ');
     let initials = names[0].substring(0, 1).toUpperCase();
@@ -8,7 +7,6 @@ function getInitials(name) {
     }
     return initials;
 }
-
 
 function updateNavbarUserInfo() {
     const userName = localStorage.getItem('username') || 'User';
