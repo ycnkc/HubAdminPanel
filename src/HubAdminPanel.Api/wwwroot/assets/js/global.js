@@ -10,12 +10,6 @@ function getInitials(name) {
 }
 
 
-function logout() {
-    localStorage.clear();
-    window.location.href = 'login.html'; 
-}
-
-
 function updateNavbarUserInfo() {
     const userName = localStorage.getItem('username') || 'User';
     const userRole = localStorage.getItem('userRole') || 'Guest';

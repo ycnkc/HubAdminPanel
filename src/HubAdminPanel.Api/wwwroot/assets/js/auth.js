@@ -1,7 +1,7 @@
 ﻿// Session, Token and Role control
 const checkAuth = () => {
     const token = localStorage.getItem('accessToken');
-    const userRole = localStorage.getItem('userRole'); // Login anında kaydettiğin rol
+    const userRole = localStorage.getItem('userRole'); 
 
     if (!token) {
         console.warn("Oturum bulunamadı: Login sayfasına yönlendiriliyor...");
@@ -25,7 +25,7 @@ const checkAuth = () => {
     checkAuth();
 })();
 
-function logout() {
+function handleLogout() {
     Swal.fire({
         title: 'Çıkış Yapılıyor',
         text: "Oturumunuzu sonlandırmak istediğinize emin misiniz?",

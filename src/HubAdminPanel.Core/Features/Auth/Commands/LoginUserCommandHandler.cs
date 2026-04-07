@@ -53,9 +53,9 @@ namespace HubAdminPanel.Core.Features.Auth.Commands
             }
 
             var isAdmin = user.UserRoles.Any(ur => ur.Role.Name == "Admin");
-            if (isAdmin)
+            if (isAdmin == false)
             {
-                throw new UnauthorizedAccessException("Bu sistemem giriş yetkiniz bulunmamaktadır.");
+                throw new UnauthorizedAccessException("Bu sisteme giriş yetkiniz bulunmamaktadır.");
             }
 
 
